@@ -1,0 +1,2 @@
+
+import Tone from 'tone';

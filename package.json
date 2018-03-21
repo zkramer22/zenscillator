@@ -1,0 +1,23 @@
+{
+  "name": "zenscillator",
+  "version": "1.0.0",
+  "description": "zenscillator",
+  "main": "entry.js",
+  "dependencies": {
+    "tone": "^0.11.11"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zkramer22/zenscillator.git"
+  },
+  "author": "zachary kramer",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/zkramer22/zenscillator/issues"
+  },
+  "homepage": "https://github.com/zkramer22/zenscillator#readme"
+}
