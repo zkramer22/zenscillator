@@ -2,13 +2,90 @@
 <html lang="en" dir="ltr">
   <head>
     <meta charset="utf-8">
-    <title></title>
-  </head>
-  <body>
-
-    <canvas id="canvas"></canvas>
+    <title>zenscillator</title>
 
     <script type="application/javascript" src="bundle.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
 
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <link href="https://fonts.googleapis.com/css?family=Quicksand" rel="stylesheet">
+  </head>
+  <body>
+    <!-- <canvas id="canvas"></canvas> -->
+    <div class="gradient-background">
+
+      <div id="efxPane" class="efxPane">effects</div>
+
+      <div id="efxContainer" class="efxContainer invisible">
+        <div id="tremolo" class="effect">
+          <span>tremolo</span>
+          1<progress value="20" max="100"></progress>2
+          <span> > Q</span>
+        </div>
+
+        <div id="autopan" class="effect">
+          <span>autopan</span>
+          3<progress value="0" max="100"></progress>4
+          <span> > E</span>
+        </div>
+
+        <div id="splash" class="effect">
+          <span>splash</span>
+          5<progress value="0" max="100"></progress>6
+          <span> > T</span>
+        </div>
+
+        <div id="delay" class="effect">
+          <span>delay</span>
+          7<progress value="0" max="100"></progress>8
+          <span> > U</span>
+        </div>
+
+        <div id="reverb" class="effect">
+          <span>reverb</span>
+          9<progress value="0" max="100"></progress>0
+          <span> > O</span>
+        </div>
+      </div>
+
+      <div class="keyboard-container">
+
+        <div class="keyboard">
+
+          <div class="flats-group">
+            <div id="spacer1"></div>
+            <div id="Db" class="flat"></div>
+            <div id="spacer2"></div>
+            <div id="Eb" class="flat"></div>
+            <div id="spacer3"></div>
+            <div id="Gb" class="flat"></div>
+            <div id="spacer4"></div>
+            <div id="Ab" class="flat"></div>
+            <div id="spacer5"></div>
+            <div id="Bb" class="flat"></div>
+            <div id="spacer6"></div>
+            <div id="eDb" class="flat"></div>
+            <div id="spacer7"></div>
+            <div id="eEb" class="flat"></div>
+          </div>
+
+          <div class="naturals-group">
+            <div id="C" class="natural"></div>
+            <div id="D" class="natural"></div>
+            <div id="E" class="natural"></div>
+            <div id="F" class="natural"></div>
+            <div id="G" class="natural"></div>
+            <div id="A" class="natural"></div>
+            <div id="B" class="natural"></div>
+            <div id="eC" class="natural"></div>
+            <div id="eD" class="natural"></div>
+            <div id="eE" class="natural"></div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
   </body>
 </html>
