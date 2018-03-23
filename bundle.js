@@ -198,7 +198,6 @@ document.addEventListener('click', (e) => {
         octave = 4;
         break;
       case 'square':
-        debugger
         instrument = INSTRUMENTS["synth"];
         instrument.set({ oscillator: { type: "square" } });
         instrument.volume.value = -15;
@@ -313,9 +312,56 @@ document.addEventListener('keyup', (e) => {
   }
 });
 
-//////////////////////
-//// audio events ////
-//////////////////////
+////////////////////////////////
+/////// analyser, canvas ///////
+////////////////////////////////
+
+document.addEventListener("DOMContentLoaded", () => {
+  let analyser = new __WEBPACK_IMPORTED_MODULE_0_tone___default.a.Analyser("waveform", 8192);
+
+  instrument.connect(analyser);
+
+  // let mic = new Tone.UserMedia();
+  // mic.connect(analyser).toMaster();
+  // mic.open();
+
+  const canvas = document.getElementById("canvas");
+  const ctx = canvas.getContext("2d");
+
+  ctx.canvas.width = $('#canvas').width();
+  ctx.canvas.height = $('#canvas').height();
+
+  function drawLoop() {
+    const canvasWidth = ctx.canvas.width;
+    const canvasHeight = ctx.canvas.height;
+    requestAnimationFrame(drawLoop);
+
+    ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+    let values = analyser.getValue();
+    ctx.beginPath();
+    ctx.lineJoin = "round";
+    ctx.lineWidth = 6;
+		ctx.strokeStyle = "white";
+    ctx.moveTo(0, (values[0] + 1) / 2 * canvasHeight);
+    for (let i = 1, len = values.length; i < len; i++) {
+					const val = (values[i] + 1) / 1.9;
+					const x = canvasWidth * (i / (len - 1));
+					const y = val * canvasHeight;
+					ctx.lineTo(x, y);
+		}
+				ctx.stroke();
+  }
+  drawLoop();
+
+});
+
+
+
+
+
+
+
+//
 
 
 /***/ }),
