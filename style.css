@@ -4,6 +4,8 @@ body {
 
 .gradient-background {
   position: absolute;
+  display: flex;
+  justify-content: center;
   z-index: -3;
   top: 0;
   right: 0;
@@ -39,6 +41,7 @@ body {
 }
 
 #spacer1 {
+  z-index: -5;
   width: 6.5%;
 }
 
@@ -215,4 +218,24 @@ progress[value]::-webkit-progress-value {
 .invisible {
   color: transparent;
   opacity: 0;
+}
+
+.instrument-container {
+  position: absolute;
+  bottom: 1.5%;
+  display: flex;
+  justify-content: space-between;
+  width: 40%;
+  background-color: rgba(242, 242, 242, 0.3);
+  border-radius: 5px;
+}
+
+.instrument {
+  width: 100px;
+  padding: 3px 3px;
+  background-color: white;
+}
+
+#triangle {
+
 }

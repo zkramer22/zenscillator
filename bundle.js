@@ -185,6 +185,23 @@ document.addEventListener('mouseout', (e) => {
   if (e.srcElement.id === 'efxPane') { toggleEFX() }
 });
 
+document.addEventListener('click', (e) => {
+  if (e.target.className === 'instrument') {
+    switch (e.target.id) {
+      case 'triangle':
+        break;
+      case 'square':
+        break;
+      case 'sine':
+        break;
+      case 'membrane':
+        break;
+      case 'fm':
+        break;
+    }
+  }
+});
+
 //////////////////////
 /// keyboard events //
 //////////////////////
