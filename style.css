@@ -15,6 +15,26 @@ body {
   overflow: hidden;
 }
 
+.title-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: white;
+  height: 120px;
+}
+
+#zenscillator {
+  font-size: 40px;
+  margin-top: 12px;
+}
+
+#name {
+  font-size: 20px;
+  color: rgb(48, 185, 255);
+}
+
+
+
 /*  */  /*  */
 /* KEYBOARD */
 /*  */  /*  */
@@ -38,10 +58,10 @@ body {
   height: 85%;
   width: 95%;
   opacity: 0.5;
+  box-shadow: 0px 0px 30px 12px rgb(0, 0, 0);
 }
 
 #spacer1 {
-  z-index: -5;
   width: 6.5%;
 }
 
@@ -223,19 +243,47 @@ progress[value]::-webkit-progress-value {
 .instrument-container {
   position: absolute;
   bottom: 1.5%;
+  width: 39%;
   display: flex;
   justify-content: space-between;
-  width: 40%;
-  background-color: rgba(242, 242, 242, 0.3);
-  border-radius: 5px;
+  align-items: center;
+  background-color: rgba(242, 242, 242, 0.5);
+  border-radius: 0 0 5px 5px;
+  border: 1.5px solid lightgrey;
+  border-top: none;
+  height: 3.4%;
 }
 
 .instrument {
-  width: 100px;
-  padding: 3px 3px;
-  background-color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 85%;
+  width: 20%;
+  transition: background-color .2s linear;
 }
 
-#triangle {
+#triangle, #square, #sine, #membrane, #fm {
+  border-right: 1px solid lightgrey;
+  cursor: pointer;
+}
 
+#triangle:hover {
+  background-color: rgb(48, 255, 251);
+}
+
+#square:hover {
+  background-color: rgb(255, 217, 48);
+}
+
+#sine:hover {
+  background-color: rgb(75, 255, 48);
+}
+
+#membrane:hover {
+  background-color: rgb(255, 106, 48);
+}
+
+#fm:hover {
+  background-color: rgb(192, 48, 255);
 }

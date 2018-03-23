@@ -4,9 +4,9 @@ import Tone from 'tone';
 //////////////////////
 
 const INSTRUMENTS = {
-  "synth"     : Tone.Synth,
-  "membrane"  : Tone.MembraneSynth,
-  "fm"        : Tone.FMSynth
+  "synth"     : new Tone.PolySynth(16, Tone.Synth).toMaster(),
+  "membrane"  : new Tone.PolySynth(2, Tone.MembraneSynth).toMaster(),
+  "fm"        : new Tone.PolySynth(2, Tone.FMSynth).toMaster()
 };
 
 const KEYCODES = {
@@ -29,29 +29,25 @@ const KEYCODES = {
   191 : ['eE', 'yellow']          // /
 };
 
-let instrument = new Tone.PolySynth(16, INSTRUMENTS["synth"]).toMaster();
+let instrument = INSTRUMENTS["synth"];
+instrument.set({ oscillator: { type: "sine" } });
+instrument.volume.value = -5;
 let octave = 4;
-
-// instrument.set({
-//   oscillator: {
-//     type: "sine"
-//   }
-// });
 
 //////////////////////
 //// effects setup ///
 //////////////////////
 
 let tremolo = new Tone.Tremolo(
-  { frequency: "8n", type: "sine", depth: 0.5, spread: 0 }).toMaster().start();
+  { frequency: "8n", type: "sine", depth: 0.5, spread: 0 }
+).toMaster().start();
 let autopan = new Tone.AutoPanner("4n").toMaster().start();
 let splash = new Tone.JCReverb(0.8).toMaster();
 let delay = new Tone.PingPongDelay("4n", 0.2).toMaster();
 let reverb = new Tone.Freeverb(0.88, 2000).toMaster();
-
 let vibrato = new Tone.Vibrato(8, 0.2).toMaster();
-// add little indicator for vibrato!
 
+// add little indicator for vibrato!
 // also add pitch bend! could be control and option
 
 const FXCODES = {
@@ -100,6 +96,11 @@ const toggleOn = (effectStr) => {
   $(`#${effectStr}`).toggleClass('active');
 };
 
+const toggleInst = (inst, color) => {
+  $('.instrument').attr('class', 'instrument');
+  $(`#${inst}`).toggleClass(`${color}`);
+};
+
 //////////////////////
 //// mouse events ////
 //////////////////////
@@ -114,16 +115,41 @@ document.addEventListener('mouseout', (e) => {
 
 document.addEventListener('click', (e) => {
   if (e.target.className === 'instrument') {
-    switch (e.target.id) {
+    const type = (e.target.id);
+    switch (type) {
       case 'triangle':
+        instrument = INSTRUMENTS["synth"];
+        instrument.set({ oscillator: { type: "triangle" } });
+        instrument.volume.value = 0;
+        toggleInst(type, 'lightblue');
+        octave = 4;
         break;
       case 'square':
+        debugger
+        instrument = INSTRUMENTS["synth"];
+        instrument.set({ oscillator: { type: "square" } });
+        instrument.volume.value = -15;
+        toggleInst(type, 'orangeyellow');
+        octave = 4;
         break;
       case 'sine':
+        instrument = INSTRUMENTS["synth"];
+        instrument.set({ oscillator: { type: "sine" } });
+        instrument.volume.value = -5;
+        toggleInst(type, 'green');
+        octave = 4;
         break;
       case 'membrane':
+        instrument = INSTRUMENTS["membrane"];
+        instrument.volume.value = -3;
+        toggleInst(type, 'redorange');
+        octave = 1;
         break;
       case 'fm':
+        instrument = INSTRUMENTS["fm"];
+        instrument.volume.value = 0;
+        toggleInst(type, 'purple');
+        octave = 2;
         break;
     }
   }
@@ -213,3 +239,7 @@ document.addEventListener('keyup', (e) => {
     }
   }
 });
+
+//////////////////////
+//// audio events ////
+//////////////////////

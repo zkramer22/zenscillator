@@ -77,9 +77,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //////////////////////
 
 const INSTRUMENTS = {
-  "synth"     : __WEBPACK_IMPORTED_MODULE_0_tone___default.a.Synth,
-  "membrane"  : __WEBPACK_IMPORTED_MODULE_0_tone___default.a.MembraneSynth,
-  "fm"        : __WEBPACK_IMPORTED_MODULE_0_tone___default.a.FMSynth
+  "synth"     : new __WEBPACK_IMPORTED_MODULE_0_tone___default.a.PolySynth(16, __WEBPACK_IMPORTED_MODULE_0_tone___default.a.Synth).toMaster(),
+  "membrane"  : new __WEBPACK_IMPORTED_MODULE_0_tone___default.a.PolySynth(2, __WEBPACK_IMPORTED_MODULE_0_tone___default.a.MembraneSynth).toMaster(),
+  "fm"        : new __WEBPACK_IMPORTED_MODULE_0_tone___default.a.PolySynth(2, __WEBPACK_IMPORTED_MODULE_0_tone___default.a.FMSynth).toMaster()
 };
 
 const KEYCODES = {
@@ -102,29 +102,25 @@ const KEYCODES = {
   191 : ['eE', 'yellow']          // /
 };
 
-let instrument = new __WEBPACK_IMPORTED_MODULE_0_tone___default.a.PolySynth(16, INSTRUMENTS["synth"]).toMaster();
+let instrument = INSTRUMENTS["synth"];
+instrument.set({ oscillator: { type: "sine" } });
+instrument.volume.value = -5;
 let octave = 4;
-
-// instrument.set({
-//   oscillator: {
-//     type: "sine"
-//   }
-// });
 
 //////////////////////
 //// effects setup ///
 //////////////////////
 
 let tremolo = new __WEBPACK_IMPORTED_MODULE_0_tone___default.a.Tremolo(
-  { frequency: "8n", type: "sine", depth: 0.5, spread: 0 }).toMaster().start();
+  { frequency: "8n", type: "sine", depth: 0.5, spread: 0 }
+).toMaster().start();
 let autopan = new __WEBPACK_IMPORTED_MODULE_0_tone___default.a.AutoPanner("4n").toMaster().start();
 let splash = new __WEBPACK_IMPORTED_MODULE_0_tone___default.a.JCReverb(0.8).toMaster();
 let delay = new __WEBPACK_IMPORTED_MODULE_0_tone___default.a.PingPongDelay("4n", 0.2).toMaster();
 let reverb = new __WEBPACK_IMPORTED_MODULE_0_tone___default.a.Freeverb(0.88, 2000).toMaster();
-
 let vibrato = new __WEBPACK_IMPORTED_MODULE_0_tone___default.a.Vibrato(8, 0.2).toMaster();
-// add little indicator for vibrato!
 
+// add little indicator for vibrato!
 // also add pitch bend! could be control and option
 
 const FXCODES = {
@@ -173,6 +169,11 @@ const toggleOn = (effectStr) => {
   $(`#${effectStr}`).toggleClass('active');
 };
 
+const toggleInst = (inst, color) => {
+  $('.instrument').attr('class', 'instrument');
+  $(`#${inst}`).toggleClass(`${color}`);
+};
+
 //////////////////////
 //// mouse events ////
 //////////////////////
@@ -187,16 +188,41 @@ document.addEventListener('mouseout', (e) => {
 
 document.addEventListener('click', (e) => {
   if (e.target.className === 'instrument') {
-    switch (e.target.id) {
+    const type = (e.target.id);
+    switch (type) {
       case 'triangle':
+        instrument = INSTRUMENTS["synth"];
+        instrument.set({ oscillator: { type: "triangle" } });
+        instrument.volume.value = 0;
+        toggleInst(type, 'lightblue');
+        octave = 4;
         break;
       case 'square':
+        debugger
+        instrument = INSTRUMENTS["synth"];
+        instrument.set({ oscillator: { type: "square" } });
+        instrument.volume.value = -15;
+        toggleInst(type, 'orangeyellow');
+        octave = 4;
         break;
       case 'sine':
+        instrument = INSTRUMENTS["synth"];
+        instrument.set({ oscillator: { type: "sine" } });
+        instrument.volume.value = -5;
+        toggleInst(type, 'green');
+        octave = 4;
         break;
       case 'membrane':
+        instrument = INSTRUMENTS["membrane"];
+        instrument.volume.value = -3;
+        toggleInst(type, 'redorange');
+        octave = 1;
         break;
       case 'fm':
+        instrument = INSTRUMENTS["fm"];
+        instrument.volume.value = 0;
+        toggleInst(type, 'purple');
+        octave = 2;
         break;
     }
   }
@@ -286,6 +312,10 @@ document.addEventListener('keyup', (e) => {
     }
   }
 });
+
+//////////////////////
+//// audio events ////
+//////////////////////
 
 
 /***/ }),
