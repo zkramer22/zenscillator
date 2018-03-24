@@ -37,8 +37,8 @@ body {
   position: absolute;
   top: 1%;
   height: 75%;
-  width: 98%;
-  border: 1px solid lightgreen;
+  width: 100%;
+  /* border: 1px solid lightgreen; */
 }
 
 /*  */  /*  */

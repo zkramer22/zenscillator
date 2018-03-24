@@ -83,23 +83,23 @@ const INSTRUMENTS = {
 };
 
 const KEYCODES = {
-  90  : ['C', 'red'],             // z
-  83  : ['Db', 'redorange'],      // s
-  88  : ['D', 'orange'],          // x
-  68  : ['Eb', 'orangeyellow'],   // d
-  67  : ['E', 'yellow'],          // c
-  86  : ['F', 'green'],           // v
-  71  : ['Gb', 'teal'],           // g
-  66  : ['G', 'lightblue'],       // b
-  72  : ['Ab', 'blue'],           // h
-  78  : ['A', 'bluepurple'],      // n
-  74  : ['Bb', 'purple'],         // j
-  77  : ['B', 'magenta'],         // m
-  188 : ['eC', 'red'],            // ,
-  76  : ['eDb', 'redorange'],     // l
-  190 : ['eD', 'orange'],         // .
-  186 : ['eEb', 'orangeyellow'],  // ;
-  191 : ['eE', 'yellow']          // /
+  90  : ['C', 'red', [255, 48, 48]],             // z
+  83  : ['Db', 'redorange', [255, 106, 48]],      // s
+  88  : ['D', 'orange', [255, 175, 48]],          // x
+  68  : ['Eb', 'orangeyellow', [255, 217, 48]],   // d
+  67  : ['E', 'yellow', [251, 255, 48]],          // c
+  86  : ['F', 'green', [75, 255, 48]],           // v
+  71  : ['Gb', 'teal', [48, 255, 185]],           // g
+  66  : ['G', 'lightblue', [48, 255, 251]],       // b
+  72  : ['Ab', 'blue', [48, 185, 255]],           // h
+  78  : ['A', 'bluepurple', [48, 72, 255]],      // n
+  74  : ['Bb', 'purple', [192, 48, 255]],         // j
+  77  : ['B', 'magenta', [255, 48, 175]],         // m
+  188 : ['eC', 'red', [255, 48, 48]],            // ,
+  76  : ['eDb', 'redorange', [255, 106, 48]],     // l
+  190 : ['eD', 'orange', [255, 175, 48]],         // .
+  186 : ['eEb', 'orangeyellow', [255, 217, 48]],  // ;
+  191 : ['eE', 'yellow', [251, 255, 48]]          // /
 };
 
 let instrument = INSTRUMENTS["synth"];
@@ -149,6 +149,68 @@ const ACTIVEFX = {
   delay   : false,
   reverb  : false,
   vibrato : false
+};
+
+/////////////////////
+///// analysers /////
+/////////////////////
+
+const waveform = new __WEBPACK_IMPORTED_MODULE_0_tone___default.a.Analyser("waveform", 2048);
+instrument.connect(waveform);
+
+const meter = new __WEBPACK_IMPORTED_MODULE_0_tone___default.a.Meter(0.8);
+instrument.connect(meter);
+
+// let mic = new Tone.UserMedia();
+// mic.connect(waveform);
+// .toMaster();
+
+// mic.open();
+
+//////////////////////
+//////  canvas  //////
+//////////////////////
+
+document.addEventListener("DOMContentLoaded", () => {
+  const canvas = document.getElementById("canvas");
+  const ctx = canvas.getContext("2d");
+
+  ctx.canvas.width = $('#canvas').width();
+  ctx.canvas.height = $('#canvas').height();
+});
+
+//----------------------------//
+
+const drawLoop = () => {
+  const canvas = document.getElementById("canvas");
+  const ctx = canvas.getContext("2d");
+  ctx.canvas.width = $('#canvas').width();
+  ctx.canvas.height = $('#canvas').height();
+  const canvasWidth = ctx.canvas.width;
+  const canvasHeight = ctx.canvas.height;
+  let values = waveform.getValue();
+  let level = meter.getLevel();
+
+  const req = requestAnimationFrame(drawLoop);
+  ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+  if (level !== -Infinity && level < -80) {
+    return;
+  }
+
+  ctx.beginPath();
+  ctx.lineJoin = "round";
+  ctx.lineWidth = 6;
+  // ctx.strokeStyle = 'rgb(' + window.colors[0] + ',' + window.colors[1] + ',' + window.colors[2] + ')';
+  ctx.strokeStyle = 'rgb(' + window.r + ',' + window.g + ',' + window.b + ')';
+  ctx.moveTo(0, (values[0] + 1) / 2 * canvasHeight);
+  for (let i = 1, len = values.length; i < len; i++) {
+    const val = (values[i] + 1) / 2;
+    const x = canvasWidth * (i / (len - 1));
+    const y = val * canvasHeight;
+    ctx.lineTo(x, y);
+  }
+  ctx.stroke();
+
 };
 
 //////////////////////
@@ -232,21 +294,41 @@ document.addEventListener('click', (e) => {
 //////////////////////
 
 document.addEventListener('keydown', (e) => {
-  // turn on note //
   if (KEYCODES.hasOwnProperty(e.keyCode)) {
     if (e.repeat) { return null }
 
+    // turn on note //
     const note = KEYCODES[e.keyCode][0];
     const color = KEYCODES[e.keyCode][1];
+    const rgbs = KEYCODES[e.keyCode][2];
+
+    window.r = rgbs[0];
+    window.g = rgbs[1];
+    window.b = rgbs[2];
+
+    // if (window.colors === undefined) {
+    //   window.colors = {
+    //     0: [rgbs[0]],
+    //     1: [rgbs[1]],
+    //     2: [rgbs[2]]
+    //   };
+    // }
+    // else if (window.colors !== undefined) {
+    //   window.colors[0].push(rgbs[0]);
+    //   window.colors[1].push(rgbs[1]);
+    //   window.colors[2].push(rgbs[2]);
+    // }
 
     switch (note[0]) {
       case "e":
         instrument.triggerAttack(`${note.slice(1)}${octave + 1}`);
         sustainClassToggle(`${note}`, `${color}`);
+        drawLoop();
         break;
       default:
         instrument.triggerAttack(`${note}${octave}`);
         sustainClassToggle(`${note}`, `${color}`);
+        drawLoop();
         break;
     }
   }
@@ -266,24 +348,26 @@ document.addEventListener('keydown', (e) => {
         }
         else {
           instrument.connect(effect);
+          effect.connect(waveform);
+          effect.connect(meter);
           ACTIVEFX[effect] = true;
           toggleOn(effectStr);
         }
         break;
       case "down":
         effect.wet.value -= 0.1;
-        $(`.${effectStr}`)[0].value -= 10;
+        $(`.${effectStr}`)[0].value -= 0.1;
         break;
       case "up":
         effect.wet.value += 0.1;
-        $(`.${effectStr}`)[0].value += 10;
+        $(`.${effectStr}`)[0].value += 0.1;
         break;
     }
   }
+  else if (e.keyCode === 189 && octave > 1) { octave-- }
+  else if (e.keyCode === 187 && octave < 6) { octave++ }
 
   // change octaves on '+' and '-' keys //
-  if (e.keyCode === 187 && octave < 6) { octave++ }
-  else if (e.keyCode === 189 && octave > 1) { octave-- }
 });
 
 document.addEventListener('keyup', (e) => {
@@ -311,55 +395,6 @@ document.addEventListener('keyup', (e) => {
     }
   }
 });
-
-////////////////////////////////
-/////// analyser, canvas ///////
-////////////////////////////////
-
-document.addEventListener("DOMContentLoaded", () => {
-  let analyser = new __WEBPACK_IMPORTED_MODULE_0_tone___default.a.Analyser("waveform", 8192);
-
-  instrument.connect(analyser);
-
-  // let mic = new Tone.UserMedia();
-  // mic.connect(analyser).toMaster();
-  // mic.open();
-
-  const canvas = document.getElementById("canvas");
-  const ctx = canvas.getContext("2d");
-
-  ctx.canvas.width = $('#canvas').width();
-  ctx.canvas.height = $('#canvas').height();
-
-  function drawLoop() {
-    const canvasWidth = ctx.canvas.width;
-    const canvasHeight = ctx.canvas.height;
-    requestAnimationFrame(drawLoop);
-
-    ctx.clearRect(0, 0, canvasWidth, canvasHeight);
-    let values = analyser.getValue();
-    ctx.beginPath();
-    ctx.lineJoin = "round";
-    ctx.lineWidth = 6;
-		ctx.strokeStyle = "white";
-    ctx.moveTo(0, (values[0] + 1) / 2 * canvasHeight);
-    for (let i = 1, len = values.length; i < len; i++) {
-					const val = (values[i] + 1) / 1.9;
-					const x = canvasWidth * (i / (len - 1));
-					const y = val * canvasHeight;
-					ctx.lineTo(x, y);
-		}
-				ctx.stroke();
-  }
-  drawLoop();
-
-});
-
-
-
-
-
-
 
 //
 
