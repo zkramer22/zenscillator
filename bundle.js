@@ -83,23 +83,23 @@ const INSTRUMENTS = {
 };
 
 const KEYCODES = {
-  90  : ['C', 'red', [255, 48, 48]],             // z
-  83  : ['Db', 'redorange', [255, 106, 48]],      // s
-  88  : ['D', 'orange', [255, 175, 48]],          // x
-  68  : ['Eb', 'orangeyellow', [255, 217, 48]],   // d
-  67  : ['E', 'yellow', [251, 255, 48]],          // c
-  86  : ['F', 'green', [75, 255, 48]],           // v
-  71  : ['Gb', 'teal', [48, 255, 185]],           // g
-  66  : ['G', 'lightblue', [48, 255, 251]],       // b
-  72  : ['Ab', 'blue', [48, 185, 255]],           // h
-  78  : ['A', 'bluepurple', [48, 72, 255]],      // n
-  74  : ['Bb', 'purple', [192, 48, 255]],         // j
-  77  : ['B', 'magenta', [255, 48, 175]],         // m
-  188 : ['eC', 'red', [255, 48, 48]],            // ,
-  76  : ['eDb', 'redorange', [255, 106, 48]],     // l
-  190 : ['eD', 'orange', [255, 175, 48]],         // .
-  186 : ['eEb', 'orangeyellow', [255, 217, 48]],  // ;
-  191 : ['eE', 'yellow', [251, 255, 48]]          // /
+  90  : ['C', 'red', '#ff3030'],             // z
+  83  : ['Db', 'redorange', '#ff6a30'],      // s
+  88  : ['D', 'orange', '#ffaf30'],          // x
+  68  : ['Eb', 'orangeyellow', '#ffd930'],   // d
+  67  : ['E', 'yellow', '#fbff30'],          // c
+  86  : ['F', 'green', '#4bff30'],           // v
+  71  : ['Gb', 'teal', '#30ffb9'],           // g
+  66  : ['G', 'lightblue', '#30fffb'],       // b
+  72  : ['Ab', 'blue', '#30b9ff'],           // h
+  78  : ['A', 'bluepurple', '#3048ff'],      // n
+  74  : ['Bb', 'purple', '#c030ff'],         // j
+  77  : ['B', 'magenta', '#ff30af'],         // m
+  188 : ['eC', 'red', '#ff3030'],            // ,
+  76  : ['eDb', 'redorange', '#ff6a30'],     // l
+  190 : ['eD', 'orange', '#ffaf30'],         // .
+  186 : ['eEb', 'orangeyellow', '#ffd930'],  // ;
+  191 : ['eE', 'yellow', '#fbff30']          // /
 };
 
 let instrument = INSTRUMENTS["synth"];
@@ -155,7 +155,8 @@ const ACTIVEFX = {
 ///// analysers /////
 /////////////////////
 
-const waveform = new __WEBPACK_IMPORTED_MODULE_0_tone___default.a.Analyser("waveform", 2048);
+const waveform = new __WEBPACK_IMPORTED_MODULE_0_tone___default.a.Analyser("waveform", 8192);
+waveform.smoothing = 0;
 instrument.connect(waveform);
 
 const meter = new __WEBPACK_IMPORTED_MODULE_0_tone___default.a.Meter(0.8);
@@ -181,7 +182,51 @@ document.addEventListener("DOMContentLoaded", () => {
 
 //----------------------------//
 
-const drawLoop = () => {
+// const rotate = (arr) => {
+//   arr.push(arr.shift());
+// };
+
+// const drawLoop = () => {
+//   const canvas = document.getElementById("canvas");
+//   const ctx = canvas.getContext("2d");
+//   ctx.canvas.width = $('#canvas').width();
+//   ctx.canvas.height = $('#canvas').height();
+//   const canvasWidth = ctx.canvas.width;
+//   const canvasHeight = ctx.canvas.height;
+//   let values = waveform.getValue();
+//   let level = meter.getLevel();
+//
+//   const req = requestAnimationFrame(drawLoop);
+//   ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+//
+//   var ctxGradient = ctx.createLinearGradient(0, 0, canvasWidth, canvasHeight);
+//   window.gradient.forEach((hex, i) => {
+//     ctxGradient.addColorStop(String(Math.abs(i / window.gradient.length)), hex);
+//   });
+//   ctx.strokeStyle = ctxGradient;
+//
+//   ctx.beginPath();
+//   ctx.lineJoin = "round";
+//   ctx.lineWidth = 6;
+//
+//   ctx.moveTo(0, (values[0] + 1) / 2 * canvasHeight);
+//   for (let i = 1, len = values.length; i < len; i++) {
+//     const val = (values[i] + 1) / 2;
+//     const x = canvasWidth * (i / (len - 1));
+//     const y = val * canvasHeight;
+//     ctx.lineTo(x, y);
+//   }
+//   ctx.stroke();
+//
+//   if (level !== -Infinity && level < -55) {
+//     ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+//     window.gradient = [];
+//     // cancelAnimationFrame(req);
+//     return;
+//   }
+// };
+
+function drawLoop() {
   const canvas = document.getElementById("canvas");
   const ctx = canvas.getContext("2d");
   ctx.canvas.width = $('#canvas').width();
@@ -191,17 +236,18 @@ const drawLoop = () => {
   let values = waveform.getValue();
   let level = meter.getLevel();
 
-  const req = requestAnimationFrame(drawLoop);
   ctx.clearRect(0, 0, canvasWidth, canvasHeight);
-  if (level !== -Infinity && level < -80) {
-    return;
-  }
+
+  var ctxGradient = ctx.createLinearGradient(0, 0, canvasWidth, canvasHeight);
+  window.gradient.forEach((hex, i) => {
+    ctxGradient.addColorStop(String(Math.abs(i / window.gradient.length)), hex);
+  });
+  ctx.strokeStyle = ctxGradient;
 
   ctx.beginPath();
   ctx.lineJoin = "round";
   ctx.lineWidth = 6;
-  // ctx.strokeStyle = 'rgb(' + window.colors[0] + ',' + window.colors[1] + ',' + window.colors[2] + ')';
-  ctx.strokeStyle = 'rgb(' + window.r + ',' + window.g + ',' + window.b + ')';
+
   ctx.moveTo(0, (values[0] + 1) / 2 * canvasHeight);
   for (let i = 1, len = values.length; i < len; i++) {
     const val = (values[i] + 1) / 2;
@@ -211,7 +257,15 @@ const drawLoop = () => {
   }
   ctx.stroke();
 
-};
+  // setTimeout(() => {
+  //   if (level !== -Infinity && level < -70) {
+  //     debugger
+  //     window.clearInterval(window.drawer);
+  //     ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+  //     window.gradient = [];
+  //   }
+  // }, 150);
+}
 
 //////////////////////
 ///// DOM manip //////
@@ -300,35 +354,27 @@ document.addEventListener('keydown', (e) => {
     // turn on note //
     const note = KEYCODES[e.keyCode][0];
     const color = KEYCODES[e.keyCode][1];
-    const rgbs = KEYCODES[e.keyCode][2];
+    const hex = KEYCODES[e.keyCode][2];
+    window.hexOn = hex;
 
-    window.r = rgbs[0];
-    window.g = rgbs[1];
-    window.b = rgbs[2];
-
-    // if (window.colors === undefined) {
-    //   window.colors = {
-    //     0: [rgbs[0]],
-    //     1: [rgbs[1]],
-    //     2: [rgbs[2]]
-    //   };
-    // }
-    // else if (window.colors !== undefined) {
-    //   window.colors[0].push(rgbs[0]);
-    //   window.colors[1].push(rgbs[1]);
-    //   window.colors[2].push(rgbs[2]);
-    // }
+    if (window.gradient) {
+      if (window.gradient.length === 4) { window.gradient.pop() }
+      window.gradient.unshift(hexOn);
+    }
+    else {
+      window.gradient = [hexOn];
+    }
 
     switch (note[0]) {
       case "e":
         instrument.triggerAttack(`${note.slice(1)}${octave + 1}`);
         sustainClassToggle(`${note}`, `${color}`);
-        drawLoop();
+        var drawer = window.setInterval(drawLoop, 1);
         break;
       default:
         instrument.triggerAttack(`${note}${octave}`);
         sustainClassToggle(`${note}`, `${color}`);
-        drawLoop();
+        window.drawer = window.setInterval(drawLoop, 1);
         break;
     }
   }
@@ -374,6 +420,8 @@ document.addEventListener('keyup', (e) => {
   if (KEYCODES.hasOwnProperty(e.keyCode)) {
     const note = KEYCODES[e.keyCode][0];
     const color = KEYCODES[e.keyCode][1];
+    const hex = KEYCODES[e.keyCode][2];
+
     // turn off note //
     if (note[0] === 'e') {
       instrument.triggerRelease(`${note.slice(1)}${octave + 1}`);
