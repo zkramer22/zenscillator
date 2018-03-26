@@ -82,12 +82,11 @@ const ACTIVEFX = {
 ///// analysers /////
 /////////////////////
 
-const waveform = new Tone.Analyser("waveform", 8192);
-waveform.smoothing = 0;
+const waveform = new Tone.Analyser("waveform", 4096);
 instrument.connect(waveform);
 
-const meter = new Tone.Meter(0.8);
-instrument.connect(meter);
+// const meter = new Tone.Meter(0.8);
+// instrument.connect(meter);
 
 // let mic = new Tone.UserMedia();
 // mic.connect(waveform);
@@ -161,7 +160,7 @@ function drawLoop() {
   const canvasWidth = ctx.canvas.width;
   const canvasHeight = ctx.canvas.height;
   let values = waveform.getValue();
-  let level = meter.getLevel();
+  // let level = meter.getLevel();
 
   ctx.clearRect(0, 0, canvasWidth, canvasHeight);
 
@@ -243,7 +242,7 @@ document.addEventListener('click', (e) => {
       case 'square':
         instrument = INSTRUMENTS["synth"];
         instrument.set({ oscillator: { type: "square" } });
-        instrument.volume.value = -15;
+        instrument.volume.value = -10;
         toggleInst(type, 'orangeyellow');
         octave = 4;
         break;
@@ -256,12 +255,16 @@ document.addEventListener('click', (e) => {
         break;
       case 'membrane':
         instrument = INSTRUMENTS["membrane"];
+        instrument.connect(waveform);
+        instrument.connect(meter);
         instrument.volume.value = -3;
         toggleInst(type, 'redorange');
         octave = 1;
         break;
       case 'fm':
         instrument = INSTRUMENTS["fm"];
+        instrument.connect(waveform);
+        instrument.connect(meter);
         instrument.volume.value = 0;
         toggleInst(type, 'purple');
         octave = 2;
@@ -296,12 +299,12 @@ document.addEventListener('keydown', (e) => {
       case "e":
         instrument.triggerAttack(`${note.slice(1)}${octave + 1}`);
         sustainClassToggle(`${note}`, `${color}`);
-        var drawer = window.setInterval(drawLoop, 1);
+        window.drawer = window.setInterval(drawLoop, 10);
         break;
       default:
         instrument.triggerAttack(`${note}${octave}`);
         sustainClassToggle(`${note}`, `${color}`);
-        window.drawer = window.setInterval(drawLoop, 1);
+        window.drawer = window.setInterval(drawLoop, 10);
         break;
     }
   }
@@ -339,7 +342,6 @@ document.addEventListener('keydown', (e) => {
   }
   else if (e.keyCode === 189 && octave > 1) { octave-- }
   else if (e.keyCode === 187 && octave < 6) { octave++ }
-
   // change octaves on '+' and '-' keys //
 });
 
