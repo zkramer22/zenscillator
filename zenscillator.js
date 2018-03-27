@@ -256,7 +256,7 @@ document.addEventListener('click', (e) => {
       case 'membrane':
         instrument = INSTRUMENTS["membrane"];
         instrument.connect(waveform);
-        instrument.connect(meter);
+        // instrument.connect(meter);
         instrument.volume.value = -3;
         toggleInst(type, 'redorange');
         octave = 1;
@@ -264,7 +264,7 @@ document.addEventListener('click', (e) => {
       case 'fm':
         instrument = INSTRUMENTS["fm"];
         instrument.connect(waveform);
-        instrument.connect(meter);
+        // instrument.connect(meter);
         instrument.volume.value = 0;
         toggleInst(type, 'purple');
         octave = 2;
@@ -325,7 +325,7 @@ document.addEventListener('keydown', (e) => {
         else {
           instrument.connect(effect);
           effect.connect(waveform);
-          effect.connect(meter);
+          // effect.connect(meter);
           ACTIVEFX[effect] = true;
           toggleOn(effectStr);
         }
