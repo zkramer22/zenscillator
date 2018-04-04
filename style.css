@@ -26,7 +26,7 @@ a {
   flex-direction: column;
   align-items: center;
   color: white;
-  height: 120px;
+  height: 160px;
 }
 
 #zenscillator {
@@ -51,7 +51,7 @@ a {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: 120px;
+  width: 170px;
   min-height: 70px;
 }
 
@@ -71,6 +71,11 @@ a {
 #linkedin {
   height: 50px;
   width: 50px;
+}
+
+#mailto {
+  height: 45px;
+  width: 45px;
 }
 
 #canvas {
