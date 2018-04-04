@@ -85,13 +85,14 @@ const ACTIVEFX = {
 const waveform = new Tone.Analyser("waveform", 4096);
 instrument.connect(waveform);
 
+// ##### meter analyser ##### //
 // const meter = new Tone.Meter(0.8);
 // instrument.connect(meter);
 
+// ####### mic ######## //
 // let mic = new Tone.UserMedia();
 // mic.connect(waveform);
 // .toMaster();
-
 // mic.open();
 
 //////////////////////
@@ -107,10 +108,6 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 //----------------------------//
-
-// const rotate = (arr) => {
-//   arr.push(arr.shift());
-// };
 
 // const drawLoop = () => {
 //   const canvas = document.getElementById("canvas");
@@ -270,6 +267,15 @@ document.addEventListener('click', (e) => {
         octave = 2;
         break;
     }
+  } else if (e.target.id === 'mute') {
+      if (e.target.innerHTML === 'volume_up') {
+        e.target.innerHTML = 'volume_off';
+        Tone.Master.mute = true;
+      }
+      else {
+        e.target.innerHTML = 'volume_up';
+        Tone.Master.mute = false;
+      }
   }
 });
 
@@ -373,4 +379,11 @@ document.addEventListener('keyup', (e) => {
   }
 });
 
+
+
+
+
+
+
+//
 //
