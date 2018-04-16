@@ -99,13 +99,13 @@ a {
 #mute-container i {
   transition: color .2s linear, box-shadow .2s linear, font-size .2s linear;
   color: rgba(255, 255, 255, 0.65);
-  font-size: 30px;
+  font-size: 2.5vw;
 }
 
 #mute-container i:hover {
   color: rgba(255, 255, 255, 1);
   box-shadow: box-shadow: 0px 25px 60px 35px rgba(255, 255, 255, 0.3);
-  font-size: 37px;
+  font-size: 3.5vw;
   cursor: pointer;
 }
 
@@ -116,6 +116,7 @@ a {
 .keyboard-container {
   position: absolute;
   display: flex;
+  z-index: 1;
   justify-content: center;
   align-items: center;
   top: 78%;
@@ -124,7 +125,7 @@ a {
   left: 30%;
   border: 1.5px solid grey;
   border-radius: 5px;
-  box-shadow: 0px 25px 60px 35px rgba(89, 89, 89, 0.3);
+  box-shadow: 0px 5px 60px 35px rgba(89, 89, 89, 0.3);
   background-color: rgba(196, 196, 196, 0.3);
 }
 
@@ -283,7 +284,7 @@ a {
   width: 100%;
 }
 
-.effect span {
+#tremolo, #autopan, #splash, #delay, #reverb {
   width: 70px;
 }
 
@@ -301,11 +302,12 @@ progress[value] {
 
 progress[value]::-webkit-progress-bar {
   border-radius: 15px;
+  background-color: darkgrey;
 }
 
 progress[value]::-webkit-progress-value {
   border-radius: 15px;
-  background-color: purple;
+  background-color: #c030ff;
 }
 
 .active {
@@ -317,10 +319,16 @@ progress[value]::-webkit-progress-value {
   opacity: 0;
 }
 
+/*  *//*  */
+/* OTHER  */
+/*  *//*  */
+
+
 .instrument-container {
   position: absolute;
   bottom: 1.5%;
   width: 39%;
+  z-index: -1;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -364,3 +372,26 @@ progress[value]::-webkit-progress-value {
 #fm:hover {
   background-color: rgb(192, 48, 255);
 }
+
+.extra-container {
+  position: absolute;
+  z-index: -1;
+  top: 75%;
+  bottom: 22%;
+  width: 39%;
+  background-color: rgba(242, 242, 242, 0.5);
+  border-radius: 5px 5px 0 0;
+  border: 1.5px solid lightgrey;
+  border-bottom: none;
+}
+
+
+
+
+
+
+
+
+
+
+/* */
