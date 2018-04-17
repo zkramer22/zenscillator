@@ -51,31 +51,27 @@ a {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: 170px;
+  width: 100%;
   min-height: 70px;
 }
 
 .links img {
   filter: invert(100%);
+  transition: all .2 ease-in-out;
 }
 
 .links img:hover {
   transform: scale(1.1);
 }
 
-#github {
-  height: 45px;
-  width: 45px;
+#github, #mailto, #website {
+  height: 46px;
+  width: 46px;
 }
 
-#linkedin {
+#linkedin, #angellist {
   height: 50px;
   width: 50px;
-}
-
-#mailto {
-  height: 45px;
-  width: 45px;
 }
 
 #canvas {
