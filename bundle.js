@@ -139,7 +139,9 @@ const FXCODES = {
   57  : [reverb, "down", "reverb"],     // 9
   48  : [reverb, "up", "reverb"],       // 0
   79  : [reverb, "toggle", "reverb"],   // o
-  192 : [vibrato, "toggle", "vibrato"]  // ~
+  192 : [vibrato, "toggle", "vibrato"], // ~
+  // 189 : [octave, "toggle", "octave"],   // -
+  // 187 : [octave, "toggle", "octave"]    // +
 };
 
 const ACTIVEFX = {
@@ -400,6 +402,7 @@ document.addEventListener('keydown', (e) => {
           instrument.disconnect(effect);
           ACTIVEFX[effect] = false;
           toggleOn(effectStr);
+
         }
         else {
           instrument.connect(effect);
@@ -419,8 +422,14 @@ document.addEventListener('keydown', (e) => {
         break;
     }
   }
-  else if (e.keyCode === 189 && octave > 1) { octave-- }
-  else if (e.keyCode === 187 && octave < 6) { octave++ }
+  else if (e.keyCode === 189 && octave > 1) {
+    octave--;
+    toggleOn('octave');
+  }
+  else if (e.keyCode === 187 && octave < 6) {
+    octave++;
+    toggleOn('octave');
+  }
   // change octaves on '+' and '-' keys //
 });
 
@@ -448,6 +457,23 @@ document.addEventListener('keyup', (e) => {
     if (effectStr === 'vibrato') {
       instrument.disconnect(effect);
       ACTIVEFX[effect] = false;
+      toggleOn(effectStr);
+    }
+  }
+  else if (e.keyCode === 189) {
+    if (octave > 1) {
+      toggleOn('octave');
+    }
+    else if (octave === 1) {
+      $('#octave').removeClass('active');
+    }
+  }
+  else if (e.keyCode === 187) {
+    if (octave < 6) {
+      toggleOn('octave');
+    }
+    else if (octave === 6) {
+      $('#octave').removeClass('active');
     }
   }
 });

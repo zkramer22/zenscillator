@@ -310,6 +310,10 @@ progress[value]::-webkit-progress-value {
   color: lightgreen;
 }
 
+/* .activeKey {
+  background-color: rgba(144, 238, 144, .6);
+} */
+
 .invisible {
   color: transparent;
   opacity: 0;
@@ -372,22 +376,29 @@ progress[value]::-webkit-progress-value {
 .extra-container {
   position: absolute;
   z-index: -1;
-  top: 75%;
+  top: 74.5%;
   bottom: 22%;
   width: 39%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   background-color: rgba(242, 242, 242, 0.5);
   border-radius: 5px 5px 0 0;
   border: 1.5px solid lightgrey;
   border-bottom: none;
 }
 
+.extra {
+  padding: 0 10px;
+}
 
-
-
-
-
-
-
-
+.key {
+  border: .5px solid lightgrey;
+  border-radius: 3px;
+  padding: 3px 10px;
+  background-color: white;
+  font-weight: 600;
+  color: black;
+}
 
 /* */
