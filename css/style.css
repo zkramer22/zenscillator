@@ -1,6 +1,7 @@
 body {
   font-family: Quicksand;
   -webkit-user-select: none;
+  font-size: 15px;
 }
 
 a {
@@ -93,14 +94,13 @@ a {
 }
 
 #mute-container i {
-  transition: color .2s linear, box-shadow .2s linear, font-size .2s linear;
+  transition: color .2s linear, font-size .2s linear;
   color: rgba(255, 255, 255, 0.65);
   font-size: 2.5vw;
 }
 
 #mute-container i:hover {
   color: rgba(255, 255, 255, 1);
-  box-shadow: box-shadow: 0px 25px 60px 35px rgba(255, 255, 255, 0.3);
   font-size: 3.5vw;
   cursor: pointer;
 }
@@ -115,13 +115,12 @@ a {
   z-index: 1;
   justify-content: center;
   align-items: center;
-  top: 78%;
-  right: 30%;
+  height: 135px;
+  width: 450px;
   bottom: 5%;
-  left: 30%;
   border: 1.5px solid grey;
   border-radius: 5px;
-  box-shadow: 0px 5px 60px 35px rgba(89, 89, 89, 0.3);
+  box-shadow: 0px 15px 60px 50px rgba(89, 89, 89, 0.3);
   background-color: rgba(196, 196, 196, 0.3);
 }
 
@@ -281,7 +280,7 @@ a {
 }
 
 #tremolo, #autopan, #splash, #delay, #reverb {
-  width: 70px;
+  width: 20%;
 }
 
 progress {
@@ -327,7 +326,8 @@ progress[value]::-webkit-progress-value {
 .instrument-container {
   position: absolute;
   bottom: 1.5%;
-  width: 39%;
+  width: 400px;
+  height: 24px;
   z-index: -1;
   display: flex;
   justify-content: space-between;
@@ -336,7 +336,6 @@ progress[value]::-webkit-progress-value {
   border-radius: 0 0 5px 5px;
   border: 1.5px solid lightgrey;
   border-top: none;
-  height: 3.4%;
 }
 
 .instrument {
@@ -376,9 +375,9 @@ progress[value]::-webkit-progress-value {
 .extra-container {
   position: absolute;
   z-index: -1;
-  top: 74.5%;
-  bottom: 22%;
-  width: 39%;
+  height: 26px;
+  bottom: 24.6%;
+  width: 405px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -389,16 +388,40 @@ progress[value]::-webkit-progress-value {
 }
 
 .extra {
-  padding: 0 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2px 0 2px 0;
 }
 
 .key {
+  text-align: center;
+  vertical-align: middle;
   border: .5px solid lightgrey;
   border-radius: 3px;
-  padding: 3px 10px;
+  padding: 0 1px 2px 1px;
+  width: 20px;
+  height: 20px;
+  margin: 0 3px;
   background-color: white;
   font-weight: 600;
   color: black;
+  box-shadow: 0px 0px 4.5px 1.1px rgba(0, 0, 0, .3);
+}
+
+.keyLarge {
+  text-align: center;
+  vertical-align: middle;
+  border: .5px solid lightgrey;
+  border-radius: 3px;
+  padding: 0 1px 2px 1px;
+  width: 34px;
+  height: 20px;
+  margin: 0 3px;
+  background-color: white;
+  font-weight: 600;
+  color: black;
+  box-shadow: 0px 0px 4.5px 1.1px rgba(0, 0, 0, .3);
 }
 
 /* */
