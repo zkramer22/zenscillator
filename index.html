@@ -16,8 +16,39 @@
 
   <body>
 
-
     <div class="gradient-background">
+
+      <div class="instructions-container invisible">
+        <div class="instructions">
+          <h3>Welcome, friend.</h3>
+
+          <p>
+            On your screen lives the Zenscillator. There is no game; no goal; no objective here.
+          </p>
+          <h4><!-- this is a jenky line separator --></h4>
+          <p>
+            Simply click or tap to play the piano keys one at a time,<br/>
+            or use your computer's keyboard to play multiple notes simultaneously.
+          </p>
+          <p>
+            Click on the tabs below the piano ("sine", "triangle", "square", etc.) <br>
+            to change the sound of the Zenscillator.
+          </p>
+          <p>
+            Hover over the "effects" panel to see which effects are available and activated.<br>
+            Use your keyboard to toggle these effects and more.
+          </p>
+          <p>
+            Have fun playing your favorite melodies and observing the colors that soar across the screen!
+          </p>
+
+          <div class="close-instructions">
+            OK
+          </div>
+
+        </div>
+      </div>
+
       <canvas id="canvas">apparently u can't see this canvas. sry :(</canvas>
 
       <div class="title-info">
@@ -52,47 +83,49 @@
         </div>
       </div>
 
-      <div id="efxPane" class="efxPane">effects</div>
+      <div id="efxPane" class="efxPane">
+          effects
+      </div>
 
       <div id="efxContainer" class="efxContainer invisible">
         <div class="effect">
           <div class="key">q</div>
           <div id="tremolo">tremolo</div>
-          <div class="keyLarge">1 ▼</div>
+          <div class="keyLarge">1 <span class="arrow"> ▼</span></div>
           <progress class="tremolo" value="1" max="1"></progress>
-          <div class="keyLarge">▲ 2</div>
+          <div class="keyLarge"><span class="arrow">▲</span> 2</div>
         </div>
 
         <div class="effect">
           <div class="key">e</div>
           <div id="autopan">autopan</div>
-          <div class="keyLarge">3 ▼</div>
+          <div class="keyLarge">3 <span class="arrow"> ▼</span></div>
           <progress class="autopan" value="1" max="1"></progress>
-          <div class="keyLarge">▲ 4</div>
+          <div class="keyLarge"><span class="arrow">▲</span> 4</div>
         </div>
 
         <div class="effect">
           <div class="key">t</div>
           <div id="splash">splash</div>
-          <div class="keyLarge">5 ▼</div>
+          <div class="keyLarge">5 <span class="arrow"> ▼</span></div>
           <progress class="splash" value="1" max="1"></progress>
-          <div class="keyLarge">▲ 6</div>
+          <div class="keyLarge"><span class="arrow">▲</span> 6</div>
         </div>
 
         <div class="effect">
           <div class="key">u</div>
           <div id="delay">delay</div>
-          <div class="keyLarge">7 ▼</div>
+          <div class="keyLarge">7 <span class="arrow"> ▼</span></div>
           <progress class="delay" value="1" max="1"></progress>
-          <div class="keyLarge">▲ 8</div>
+          <div class="keyLarge"><span class="arrow">▲</span> 8</div>
         </div>
 
         <div class="effect">
           <div class="key">o</div>
           <div id="reverb">reverb</div>
-          <div class="keyLarge">9 ▼</div>
+          <div class="keyLarge">9 <span class="arrow"> ▼</span></div>
           <progress class="reverb" value="1" max="1"></progress>
-          <div class="keyLarge">▲ 0</div>
+          <div class="keyLarge"><span class="arrow">▲</span> 0</div>
         </div>
       </div>
 
@@ -103,8 +136,8 @@
         </div>
         <div id="octave" class="extra">
           octave
-          <div class="key">-</div>
-          <div class="key">+</div>
+          <div id="octaveDown" class="key">-</div>
+          <div id="octaveUp" class="key">+</div>
         </div>
       </div>
 
@@ -112,32 +145,32 @@
         <div class="keyboard">
           <div class="flats-group">
             <div id="spacer1" class="spacers"></div>
-            <div id="Db" class="flat"><span>s</span></div>
+            <div id="Db" class="flat">s</div>
             <div id="spacer2" class="spacers"></div>
-            <div id="Eb" class="flat"><span>d</span></div>
+            <div id="Eb" class="flat">d</div>
             <div id="spacer3" class="spacers"></div>
-            <div id="Gb" class="flat"><span>g</span></div>
+            <div id="Gb" class="flat">g</div>
             <div id="spacer4" class="spacers"></div>
-            <div id="Ab" class="flat"><span>h</span></div>
+            <div id="Ab" class="flat">h</div>
             <div id="spacer5" class="spacers"></div>
-            <div id="Bb" class="flat"><span>j</span></div>
+            <div id="Bb" class="flat">j</div>
             <div id="spacer6" class="spacers"></div>
-            <div id="eDb" class="flat"><span>l</span></div>
+            <div id="eDb" class="flat">l</div>
             <div id="spacer7" class="spacers"></div>
-            <div id="eEb" class="flat"><span>;</span></div>
+            <div id="eEb" class="flat">;</div>
           </div>
 
           <div class="naturals-group">
-            <div id="C" class="natural"><span>z</span></div>
-            <div id="D" class="natural"><span>x</span></div>
-            <div id="E" class="natural"><span>c</span></div>
-            <div id="F" class="natural"><span>v</span></div>
-            <div id="G" class="natural"><span>b</span></div>
-            <div id="A" class="natural"><span>n</span></div>
-            <div id="B" class="natural"><span>m</span></div>
-            <div id="eC" class="natural"><span>,</span></div>
-            <div id="eD" class="natural"><span>.</span></div>
-            <div id="eE" class="natural"><span>/</span></div>
+            <div id="C" class="natural">z</div>
+            <div id="D" class="natural">x</div>
+            <div id="E" class="natural">c</div>
+            <div id="F" class="natural">v</div>
+            <div id="G" class="natural">b</div>
+            <div id="A" class="natural">n</div>
+            <div id="B" class="natural">m</div>
+            <div id="eC" class="natural">,</div>
+            <div id="eD" class="natural">.</div>
+            <div id="eE" class="natural">/</div>
           </div>
         </div>
       </div>
@@ -152,6 +185,10 @@
 
       <div id="mute-container">
         <i id="mute" class="material-icons">volume_up</i>
+      </div>
+
+      <div id="help-container">
+        <i id="help" class="material-icons">help</i>
       </div>
 
     </div>

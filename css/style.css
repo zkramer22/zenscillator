@@ -22,6 +22,52 @@ a {
   overflow: hidden;
 }
 
+.instructions-container {
+  position: absolute;
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  top: 22%;
+  left: auto;
+  width: 55%;
+  border: 3px double white;
+  border-radius: 15px;
+  padding: 10px 20px 15px 20px;
+  background-color: darkgrey;
+  transition: opacity .4s linear;
+  opacity: 1;
+}
+
+.instructions {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  text-align: center;
+  color: white;
+}
+
+.instructions h4 {
+  border-bottom: 1px solid white;
+}
+
+.close-instructions {
+  align-self: center;
+  padding-top: 10px;
+  height: 30px;
+  width: 20%;
+  color: black;
+  background-color: white;
+  border: 1px solid black;
+  border-radius: 5px;
+  transition: all .1s linear;
+}
+
+.close-instructions:hover {
+  background-color: rgb(216, 255, 216);
+  cursor: pointer;
+}
+
 .title-info {
   display: flex;
   flex-direction: column;
@@ -77,15 +123,15 @@ a {
 
 #canvas {
   position: absolute;
-  top: 1%;
-  height: 75%;
+  /* z-index: 0; */
+  top: 13%;
+  height: 57%;
   width: 100%;
 }
 
-#mute-container {
+#mute-container, #help-container {
   position: absolute;
   right: 1.5%;
-  bottom: 1.5%;
   width: 30px;
   height: 30px;
   display: flex;
@@ -93,17 +139,27 @@ a {
   align-items: center;
 }
 
-#mute-container i {
+#mute-container {
+  bottom: 1.5%;
+}
+
+#help-container {
+  top: 1.5%;
+}
+
+#mute-container i, #help-container i {
   transition: color .2s linear, font-size .2s linear;
   color: rgba(255, 255, 255, 0.65);
   font-size: 2.5vw;
 }
 
-#mute-container i:hover {
+#mute-container i:hover, #help-container i:hover {
   color: rgba(255, 255, 255, 1);
   font-size: 3.5vw;
   cursor: pointer;
 }
+
+
 
 /*  */  /*  */
 /* KEYBOARD */
@@ -125,6 +181,8 @@ a {
 }
 
 .keyboard {
+  position: relative;
+  top: -3px;
   height: 85%;
   width: 95%;
   opacity: 0.5;
@@ -136,7 +194,7 @@ a {
 }
 
 #spacer2, #spacer4, #spacer5, #spacer7 {
-  width: 2.7%;
+  width: 2.6%;
 }
 
 #spacer3, #spacer6 {
@@ -145,8 +203,9 @@ a {
 
 .flats-group {
   position: relative;
+  top: 0px;
   display: flex;
-  z-index: 2;
+  z-index: 3;
   height: 60%;
   color: white;
 }
@@ -155,36 +214,41 @@ a {
   position: relative;
   display: flex;
   justify-content: center;
-  z-index: 1;
+  z-index: 2;
   height: 100%;
   bottom: 60%;
   color: black;
 }
 
+.spacers {
+  position: relative;
+  opacity: 0.1;
+}
+
 .natural, .flat {
+  position: relative;
+  height: 100%;
+  z-index: 1;
   display: flex;
   justify-content: center;
   align-items: flex-end;
-  height: 100%;
   transition: background-color .07s linear;
   border: .5px solid grey;
   border-radius: 5px;
   cursor: default;
 }
 
-.natural span, .flat span {
-  margin-bottom: 7px;
-  font-weight: 500;
-}
-
 .natural {
   width: 10%;
   background-color: rgb(255, 255, 255);
+  padding-bottom: 5px;
 }
 
 .flat {
   width: 7%;
+  /* height: 90%; */
   background-color: rgb(0, 0, 0);
+  padding-bottom: 5px;
 }
 
 .red {
@@ -268,7 +332,9 @@ a {
   color: rgba(255, 255, 255, 0.6);
   opacity: 0.9;
   background-color: black;
-  border: 1px solid lightgrey;
+  border: 1px solid darkgrey;
+  border-bottom: none;
+  border-left: none;
   transition: opacity .2s linear, color .2s linear;
   cursor: default;
 }
@@ -314,6 +380,10 @@ progress[value]::-webkit-progress-value {
 .invisible {
   color: transparent;
   opacity: 0;
+}
+
+.hidden {
+  display: none;
 }
 
 /*  *//*  */
@@ -393,8 +463,11 @@ progress[value]::-webkit-progress-value {
 }
 
 .key {
-  text-align: center;
-  vertical-align: middle;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* text-align: center; */
+  /* vertical-align: middle; */
   border: .5px solid lightgrey;
   border-radius: 3px;
   padding: 0 1px 2px 1px;
@@ -408,8 +481,11 @@ progress[value]::-webkit-progress-value {
 }
 
 .keyLarge {
-  text-align: center;
-  vertical-align: middle;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* text-align: center;
+  vertical-align: middle; */
   border: .5px solid lightgrey;
   border-radius: 3px;
   padding: 0 1px 2px 1px;
@@ -420,6 +496,15 @@ progress[value]::-webkit-progress-value {
   font-weight: 600;
   color: black;
   box-shadow: 0px 0px 4.5px 1.1px rgba(0, 0, 0, .3);
+}
+
+.keyLarge span {
+  position: relative;
+  top: 1px;
+}
+
+.pressed {
+  color: lightgreen;
 }
 
 /* */

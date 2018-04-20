@@ -102,6 +102,26 @@ const KEYCODES = {
   191 : ['eE', 'yellow', '#fbff30']          // /
 };
 
+const MOUSECODES = {
+  'C': ['red', '#ff3030'],             // z
+  'Db': ['redorange', '#ff6a30'],      // s
+  'D': ['orange', '#ffaf30'],          // x
+  'Eb': ['orangeyellow', '#ffd930'],   // d
+  'E': ['yellow', '#fbff30'],          // c
+  'F': ['green', '#4bff30'],           // v
+  'Gb': ['teal', '#30ffb9'],           // g
+  'G': ['lightblue', '#30fffb'],       // b
+  'Ab': ['blue', '#30b9ff'],           // h
+  'A': ['bluepurple', '#3048ff'],      // n
+  'Bb': ['purple', '#c030ff'],         // j
+  'B': ['magenta', '#ff30af'],         // m
+  'eC': ['red', '#ff3030'],            // ,
+  'eDb': ['redorange', '#ff6a30'],     // l
+  'eD': ['orange', '#ffaf30'],         // .
+  'eEb': ['orangeyellow', '#ffd930'],  // ;
+  'eE': ['yellow', '#fbff30']          // /
+}
+
 let instrument = INSTRUMENTS["synth"];
 instrument.set({ oscillator: { type: "sine" } });
 instrument.volume.value = -5;
@@ -157,7 +177,8 @@ const ACTIVEFX = {
 ///// analysers /////
 /////////////////////
 
-const waveform = new __WEBPACK_IMPORTED_MODULE_0_tone___default.a.Analyser("waveform", 4096);
+const waveform = new __WEBPACK_IMPORTED_MODULE_0_tone___default.a.Analyser("waveform", 2048);
+waveform.smoothing = 1;
 instrument.connect(waveform);
 
 // ##### meter analyser ##### //
@@ -180,49 +201,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
   ctx.canvas.width = $('#canvas').width();
   ctx.canvas.height = $('#canvas').height();
+
+  $('.instructions-container').toggleClass('invisible');
 });
 
 //----------------------------//
-
-// const drawLoop = () => {
-//   const canvas = document.getElementById("canvas");
-//   const ctx = canvas.getContext("2d");
-//   ctx.canvas.width = $('#canvas').width();
-//   ctx.canvas.height = $('#canvas').height();
-//   const canvasWidth = ctx.canvas.width;
-//   const canvasHeight = ctx.canvas.height;
-//   let values = waveform.getValue();
-//   let level = meter.getLevel();
-//
-//   const req = requestAnimationFrame(drawLoop);
-//   ctx.clearRect(0, 0, canvasWidth, canvasHeight);
-//
-//   var ctxGradient = ctx.createLinearGradient(0, 0, canvasWidth, canvasHeight);
-//   window.gradient.forEach((hex, i) => {
-//     ctxGradient.addColorStop(String(Math.abs(i / window.gradient.length)), hex);
-//   });
-//   ctx.strokeStyle = ctxGradient;
-//
-//   ctx.beginPath();
-//   ctx.lineJoin = "round";
-//   ctx.lineWidth = 6;
-//
-//   ctx.moveTo(0, (values[0] + 1) / 2 * canvasHeight);
-//   for (let i = 1, len = values.length; i < len; i++) {
-//     const val = (values[i] + 1) / 2;
-//     const x = canvasWidth * (i / (len - 1));
-//     const y = val * canvasHeight;
-//     ctx.lineTo(x, y);
-//   }
-//   ctx.stroke();
-//
-//   if (level !== -Infinity && level < -55) {
-//     ctx.clearRect(0, 0, canvasWidth, canvasHeight);
-//     window.gradient = [];
-//     // cancelAnimationFrame(req);
-//     return;
-//   }
-// };
 
 function drawLoop() {
   const canvas = document.getElementById("canvas");
@@ -247,7 +230,7 @@ function drawLoop() {
   ctx.lineWidth = 6;
 
   ctx.moveTo(0, (values[0] + 1) / 2 * canvasHeight);
-  for (let i = 1, len = values.length; i < len; i++) {
+  for (let i = 1, len = values.length; i < len; i += 1) {
     const val = (values[i] + 1) / 2;
     const x = canvasWidth * (i / (len - 1));
     const y = val * canvasHeight;
@@ -279,6 +262,14 @@ const toggleEFX = () => {
   $('#efxContainer').toggleClass('invisible');
 };
 
+const toggleHelp = () => {
+  $('.instructions-container').toggleClass('hidden');
+};
+
+const toggleInvisible = () => {
+  $('.instructions-container').toggleClass('invisible');
+}
+
 const toggleOn = (effectStr) => {
   $(`#${effectStr}`).toggleClass('active');
 };
@@ -292,9 +283,11 @@ const toggleInst = (inst, color) => {
 //// mouse events ////
 //////////////////////
 
+document.addEventListener('contextmenu', (e) => e.preventDefault());
+
 document.addEventListener('mouseover', (e) => {
   if (e.srcElement.id === 'efxPane') { toggleEFX() }
-});
+});-
 
 document.addEventListener('mouseout', (e) => {
   if (e.srcElement.id === 'efxPane') { toggleEFX() }
@@ -342,18 +335,92 @@ document.addEventListener('click', (e) => {
         octave = 2;
         break;
     }
-  } else if (e.target.id === 'mute') {
-      if (e.target.innerHTML === 'volume_up') {
-        e.target.innerHTML = 'volume_off';
-        __WEBPACK_IMPORTED_MODULE_0_tone___default.a.Master.mute = true;
-      }
-      else {
-        e.target.innerHTML = 'volume_up';
-        __WEBPACK_IMPORTED_MODULE_0_tone___default.a.Master.mute = false;
-      }
+  }
+  else if (e.target.id === 'mute') {
+    if (e.target.innerHTML === 'volume_up') {
+      e.target.innerHTML = 'volume_off';
+      __WEBPACK_IMPORTED_MODULE_0_tone___default.a.Master.mute = true;
+    }
+    else {
+      e.target.innerHTML = 'volume_up';
+      __WEBPACK_IMPORTED_MODULE_0_tone___default.a.Master.mute = false;
+    }
+  }
+  else if (e.target.id === 'help' || e.target.className === 'close-instructions') {
+    const instructions = document.getElementsByClassName('instructions-container');
+    if (instructions[0].className.split(" ")[1] === 'invisible') {
+      toggleHelp();
+      setTimeout(() => toggleInvisible(), 0);
+    }
+    else {
+      toggleInvisible();
+      setTimeout(() => toggleHelp(), 400);
+    }
+  }
+  else if (e.target.id === 'octaveDown') {
+    if (octave > 1) {
+      octave--;
+      toggleOn('octave');
+      setTimeout(() => toggleOn('octave'), 70);
+    }
+  }
+  else if (e.target.id === 'octaveUp') {
+    if (octave < 6) {
+      octave++;
+      toggleOn('octave');
+      setTimeout(() => toggleOn('octave'), 70);
+    }
   }
 });
 
+document.addEventListener('mousedown', (e) => {
+  if (e.target.className === 'natural' || e.target.className === 'flat') {
+    const note = e.target.id;
+    const color = MOUSECODES[e.target.id][0];
+    const hex = MOUSECODES[e.target.id][1];
+
+    window.hexOn = hex;
+
+    if (window.gradient) {
+      if (window.gradient.length === 4) { window.gradient.pop() }
+      window.gradient.unshift(hexOn);
+    }
+    else {
+      window.gradient = [hexOn];
+    }
+
+    switch (note[0]) {
+      case "e":
+        instrument.triggerAttack(`${note.slice(1)}${octave + 1}`);
+        sustainClassToggle(`${note}`, `${color}`);
+        window.drawer = window.setInterval(drawLoop, 10);
+        break;
+      default:
+        instrument.triggerAttack(`${note}${octave}`);
+        sustainClassToggle(`${note}`, `${color}`);
+        window.drawer = window.setInterval(drawLoop, 10);
+        break;
+    }
+  }
+});
+
+document.addEventListener('mouseup', (e) => {
+  if (MOUSECODES.hasOwnProperty(e.target.id)) {
+    const note = e.target.id;
+    const color = MOUSECODES[e.target.id][0];
+    const hex = MOUSECODES[e.target.id][1];
+
+    // turn off note //
+    if (note[0] === 'e') {
+      instrument.triggerRelease(`${note.slice(1)}${octave + 1}`);
+      sustainClassToggle(`${note}`, `${color}`);
+    }
+    else {
+      instrument.triggerRelease(`${note}${octave}`);
+      sustainClassToggle(`${note}`, `${color}`);
+    }
+  }
+});
 //////////////////////
 /// keyboard events //
 //////////////////////
@@ -402,7 +469,6 @@ document.addEventListener('keydown', (e) => {
           instrument.disconnect(effect);
           ACTIVEFX[effect] = false;
           toggleOn(effectStr);
-
         }
         else {
           instrument.connect(effect);
@@ -477,6 +543,7 @@ document.addEventListener('keyup', (e) => {
     }
   }
 });
+
 
 
 
