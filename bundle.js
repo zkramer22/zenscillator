@@ -259,7 +259,10 @@ const sustainClassToggle = (note, color) => {
 
 const toggleEFX = () => {
   $('#efxPane').toggleClass('invisible');
-  $('#efxContainer').toggleClass('invisible');
+  $('#efxContainer').toggleClass('hidden');
+  setTimeout(() => {
+    $('#efxContainer').toggleClass('invisible');
+  }, 200);
 };
 
 const toggleHelp = () => {
@@ -294,8 +297,8 @@ document.addEventListener('mouseout', (e) => {
 });
 
 document.addEventListener('click', (e) => {
-  e.preventDefault();
-  
+  // e.preventDefault();
+
   if (e.target.className === 'instrument') {
     const type = (e.target.id);
     switch (type) {
@@ -377,7 +380,7 @@ document.addEventListener('click', (e) => {
 
 document.addEventListener('mousedown', (e) => {
   e.preventDefault();
-  
+
   if (e.target.className === 'natural' || e.target.className === 'flat') {
     const note = e.target.id;
     const color = MOUSECODES[e.target.id][0];
@@ -410,7 +413,7 @@ document.addEventListener('mousedown', (e) => {
 
 document.addEventListener('mouseup', (e) => {
   e.preventDefault();
-  
+
   if (MOUSECODES.hasOwnProperty(e.target.id)) {
     const note = e.target.id;
     const color = MOUSECODES[e.target.id][0];
@@ -434,7 +437,7 @@ document.addEventListener('mouseup', (e) => {
 
 document.addEventListener('touchstart', (e) => {
   e.preventDefault();
-  
+
   if (e.target.className === 'natural' || e.target.className === 'flat') {
     const note = e.target.id;
     const color = MOUSECODES[e.target.id][0];
@@ -467,7 +470,7 @@ document.addEventListener('touchstart', (e) => {
 
 document.addEventListener('touchend', (e) => {
   e.preventDefault();
-  
+
   if (MOUSECODES.hasOwnProperty(e.target.id)) {
     const note = e.target.id;
     const color = MOUSECODES[e.target.id][0];
@@ -491,7 +494,7 @@ document.addEventListener('touchend', (e) => {
 
 document.addEventListener('keydown', (e) => {
   e.preventDefault();
-  
+
   if (KEYCODES.hasOwnProperty(e.keyCode)) {
     if (e.repeat) { return null }
 
@@ -567,7 +570,7 @@ document.addEventListener('keydown', (e) => {
 
 document.addEventListener('keyup', (e) => {
   e.preventDefault();
-  
+
   if (KEYCODES.hasOwnProperty(e.keyCode)) {
     const note = KEYCODES[e.keyCode][0];
     const color = KEYCODES[e.keyCode][1];
