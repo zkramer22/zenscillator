@@ -348,6 +348,60 @@ document.addEventListener('mouseup', (e) => {
     }
   }
 });
+
+//////////////////////
+//// touch events ////
+//////////////////////
+
+document.addEventListener('touchstart', (e) => {
+  if (e.target.className === 'natural' || e.target.className === 'flat') {
+    const note = e.target.id;
+    const color = MOUSECODES[e.target.id][0];
+    const hex = MOUSECODES[e.target.id][1];
+
+    window.hexOn = hex;
+
+    if (window.gradient) {
+      if (window.gradient.length === 4) { window.gradient.pop() }
+      window.gradient.unshift(hexOn);
+    }
+    else {
+      window.gradient = [hexOn];
+    }
+
+    switch (note[0]) {
+      case "e":
+        instrument.triggerAttack(`${note.slice(1)}${octave + 1}`);
+        sustainClassToggle(`${note}`, `${color}`);
+        window.drawer = window.setInterval(drawLoop, 10);
+        break;
+      default:
+        instrument.triggerAttack(`${note}${octave}`);
+        sustainClassToggle(`${note}`, `${color}`);
+        window.drawer = window.setInterval(drawLoop, 10);
+        break;
+    }
+  }
+});
+
+document.addEventListener('touchend', (e) => {
+  if (MOUSECODES.hasOwnProperty(e.target.id)) {
+    const note = e.target.id;
+    const color = MOUSECODES[e.target.id][0];
+    const hex = MOUSECODES[e.target.id][1];
+
+    // turn off note //
+    if (note[0] === 'e') {
+      instrument.triggerRelease(`${note.slice(1)}${octave + 1}`);
+      sustainClassToggle(`${note}`, `${color}`);
+    }
+    else {
+      instrument.triggerRelease(`${note}${octave}`);
+      sustainClassToggle(`${note}`, `${color}`);
+    }
+  }
+});
+
 //////////////////////
 /// keyboard events //
 //////////////////////
