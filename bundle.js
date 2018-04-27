@@ -321,7 +321,7 @@ document.addEventListener('touchstart', (e) => {
 });
 
 document.addEventListener('touchend', (e) => {
-  e.preventDefault();
+  // e.preventDefault();
 
   if (MOUSECODES.hasOwnProperty(e.target.id)) {
     const note = e.target.id;
