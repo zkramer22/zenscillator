@@ -30,7 +30,7 @@ a {
   align-items: center;
   top: 22%;
   left: auto;
-  width: 55%;
+  width: auto;
   border: 3px double white;
   border-radius: 15px;
   padding: 10px 20px 15px 20px;
@@ -507,4 +507,10 @@ progress[value]::-webkit-progress-value {
   color: lightgreen;
 }
 
-/* */
+/* media queries */
+
+@media (max-width: 800px) {
+  main {
+    overflow: scroll !important;
+  }
+}

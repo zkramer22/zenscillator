@@ -282,8 +282,6 @@ document.addEventListener('mouseout', (e) => {
 });
 
 document.addEventListener('click', (e) => {
-  // e.preventDefault();
-
   if (e.target.className === 'instrument') {
     const type = (e.target.id);
     switch (type) {
@@ -345,6 +343,9 @@ document.addEventListener('click', (e) => {
     else {
       toggleInvisible();
       setTimeout(() => toggleHelp(), 400);
+    }
+    if (Tone.context.state !== 'running') {
+      Tone.context.resume();
     }
   }
   else if (e.target.id === 'octaveDown') {
@@ -421,7 +422,10 @@ document.addEventListener('mouseup', (e) => {
 //////////////////////
 
 document.addEventListener('keydown', (e) => {
-  e.preventDefault();
+  // e.preventDefault();
+  if (Tone.context.state !== 'running') {
+    return;
+  }
 
   if (KEYCODES.hasOwnProperty(e.keyCode)) {
     if (e.repeat) { return null }
@@ -497,7 +501,9 @@ document.addEventListener('keydown', (e) => {
 });
 
 document.addEventListener('keyup', (e) => {
-  e.preventDefault();
+  if (Tone.context.state !== 'running') {
+    return;
+  }
 
   if (KEYCODES.hasOwnProperty(e.keyCode)) {
     const note = KEYCODES[e.keyCode][0];
