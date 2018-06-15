@@ -372,6 +372,7 @@ $(document).ready(() => {
     let note = e.target.id;
     let color = MOUSECODES[e.target.id][0];
     let hex = MOUSECODES[e.target.id][1];
+    const $target = $(e.target);
 
     window.hexOn = hex;
 
@@ -400,10 +401,29 @@ $(document).ready(() => {
 
     $('.naturals-group, .flats-group').mousemove(eMove => {
         if (eMove.target.id != note) {
-          $(e.target).trigger('mouseup');
+          $target.trigger('mouseup');
           $(eMove.target).trigger('mousedown');
         }
     });
+
+    $('body').mouseup(eUp => {
+      if (eUp.target.className === 'natural' || eUp.target.className === 'flat') {
+        return;
+      }
+      else {
+        $target.trigger('mouseup');
+      }
+    });
+
+    // if a mouseup occurs and the target is not a natural or flat,
+    // trigger the mouseup for e.target.
+    // maybe set a listener on body and find target.
+    // OR just move the mouseup listener into here.
+
+    // $('.keyboard-container').mouseover(eOver => {
+    //   console.log(eOver.target);
+    //   $(e.target).trigger('mouseup');
+    // });
 
   });
 // ------------------------------------------------------
@@ -425,7 +445,7 @@ $(document).ready(() => {
     }
 
     $('.naturals-group, .flats-group').off('mousemove');
-    $('.keyboard-container').off('mouseover');
+    $('body').off('mouseup');
 
   });
 
