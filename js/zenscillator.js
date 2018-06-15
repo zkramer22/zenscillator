@@ -1,4 +1,5 @@
 import Tone from 'tone';
+
 //////////////////////
 // instrument setup //
 //////////////////////
@@ -364,18 +365,20 @@ document.addEventListener('click', (e) => {
   }
 });
 
-document.addEventListener('mousedown', (e) => {
-  e.preventDefault();
+$(document).ready(() => {
+  $('.naturals-group, .flats-group').mousedown(e => {
+    e.preventDefault();
 
-  if (e.target.className === 'natural' || e.target.className === 'flat') {
-    const note = e.target.id;
-    const color = MOUSECODES[e.target.id][0];
-    const hex = MOUSECODES[e.target.id][1];
+    let note = e.target.id;
+    let color = MOUSECODES[e.target.id][0];
+    let hex = MOUSECODES[e.target.id][1];
 
     window.hexOn = hex;
 
     if (window.gradient) {
-      if (window.gradient.length === 4) { window.gradient.pop() }
+      if (window.gradient.length === 4) {
+        window.gradient.pop();
+      }
       window.gradient.unshift(hexOn);
     }
     else {
@@ -394,13 +397,19 @@ document.addEventListener('mousedown', (e) => {
         window.drawer = window.setInterval(drawLoop, 10);
         break;
     }
-  }
-});
 
-document.addEventListener('mouseup', (e) => {
-  e.preventDefault();
+    $('.naturals-group, .flats-group').mousemove(eMove => {
+        if (eMove.target.id != note) {
+          $(e.target).trigger('mouseup');
+          $(eMove.target).trigger('mousedown');
+        }
+    });
 
-  if (MOUSECODES.hasOwnProperty(e.target.id)) {
+  });
+// ------------------------------------------------------
+  $('.naturals-group, .flats-group').mouseup(e => {
+    e.preventDefault();
+
     const note = e.target.id;
     const color = MOUSECODES[e.target.id][0];
     const hex = MOUSECODES[e.target.id][1];
@@ -414,7 +423,12 @@ document.addEventListener('mouseup', (e) => {
       instrument.triggerRelease(`${note}${octave}`);
       sustainClassToggle(`${note}`, `${color}`);
     }
-  }
+
+    $('.naturals-group, .flats-group').off('mousemove');
+    $('.keyboard-container').off('mouseover');
+
+  });
+
 });
 
 //////////////////////
