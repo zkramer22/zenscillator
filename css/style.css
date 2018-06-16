@@ -300,40 +300,52 @@ a {
 /*  EFX   */
 /*  *//*  */
 
-.efxPane {
+#efxPane { /* out */
   position: absolute;
   z-index: 5;
-  bottom: -35px;
-  left: -65px;
-  height: 80px;
+  top: -34px;
+  left: 100px;
+  height: 25px;
   width: 150px;
-  padding-top: 10px;
-  background-color: rgba(206, 206, 206, 0.3);
+  padding-top: 7px;
+  border-radius: 15px 15px 0 0;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-bottom: 1px solid black;
   color: rgb(255, 255, 255);
-  transition: opacity .2s linear;
-  transform: rotate(45deg);
+  transition: all .1s linear;
   text-align: center;
-  cursor: none;
+  cursor: pointer;
 }
 
-.efxContainer {
+#efxPane:hover {
+  border: 1px solid white;
+  border-bottom: 1px solid black;
+}
+
+#efxContainer {
   position: absolute;
   z-index: 4;
-  bottom: 6px;
-  left: 0;
+  bottom: -205px;
+  left: 10px;
   display: flex;
   flex-direction: column;
   height: 192px;
   width: 380px;
-  padding: 2px 10px 2px 10px;
+  padding: 10px 10px 2px 10px;
   color: rgba(255, 255, 255, 0.6);
-  opacity: 0.9;
   background-color: black;
   border: 1px solid darkgrey;
   border-bottom: none;
-  border-left: none;
-  transition: opacity .2s linear, color .2s linear;
+  border-radius: 20px 20px 0 0;
   cursor: default;
+}
+
+.efxButton {
+  border: 1px solid;
+  border-radius: 5px;
+  padding: 5px 5px;
+  text-align: center;
+  transition: all .1s linear;
 }
 
 .effect {

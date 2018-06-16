@@ -68,8 +68,18 @@ let delay = new Tone.PingPongDelay("4n", 0.2).toMaster();
 let reverb = new Tone.Freeverb(0.88, 2000).toMaster();
 let vibrato = new Tone.Vibrato(8, 0.2).toMaster();
 
+let efxPanel = false;
 // add little indicator for vibrato!
 // also add pitch bend! could be control and option
+
+const FXBANK = {
+  "tremolo": tremolo,
+  "autopan": autopan,
+  "splash": splash,
+  "delay": delay,
+  "reverb": reverb,
+  "vibrato": vibrato
+};
 
 const FXCODES = {
   49  : [tremolo, "down", "tremolo"],   // 1
@@ -93,12 +103,12 @@ const FXCODES = {
 };
 
 const ACTIVEFX = {
-  tremolo : false,
-  autopan : false,
-  splash  : false,
-  delay   : false,
-  reverb  : false,
-  vibrato : false
+  'tremolo' : false,
+  'autopan' : false,
+  'splash'  : false,
+  'delay'   : false,
+  'reverb'  : false,
+  'vibrato' : false
 };
 
 /////////////////////
@@ -185,18 +195,9 @@ const sustainClassToggle = (note, color) => {
   $(`#${note}`).toggleClass(`${color}`);
 };
 
-const toggleEFX = () => {
-  $('#efxPane').toggleClass('invisible');
-
-  $('#efxContainer').toggleClass('hidden');
-  setTimeout(() => {
-    $('#efxContainer').toggleClass('invisible');
-  }, 200);
+const toggleOn = (effect) => {
+  $(`#${effect}`).toggleClass('active');
 };
-
-// const toggleOn = (effectStr) => {
-//   $(`#${effectStr}`).toggleClass('active');
-// };
 
 const toggleInst = (inst, color) => {
   $('.instrument').attr('class', 'instrument');
@@ -207,156 +208,64 @@ const toggleInst = (inst, color) => {
 //// touch events ////
 //////////////////////
 //
-// document.addEventListener('touchstart', (e) => {
-//   e.preventDefault();
-//
-//   if (e.target.className === 'natural' || e.target.className === 'flat') {
-//     const note = e.target.id;
-//     const color = MOUSECODES[e.target.id][0];
-//     const hex = MOUSECODES[e.target.id][1];
-//
-//     window.hexOn = hex;
-//
-//     if (window.gradient) {
-//       if (window.gradient.length === 4) { window.gradient.pop() }
-//       window.gradient.unshift(hexOn);
-//     }
-//     else {
-//       window.gradient = [hexOn];
-//     }
-//
-//     switch (note[0]) {
-//       case "e":
-//         instrument.triggerAttack(`${note.slice(1)}${octave + 1}`);
-//         sustainClassToggle(`${note}`, `${color}`);
-//         window.drawer = window.setInterval(drawLoop, 10);
-//         break;
-//       default:
-//         instrument.triggerAttack(`${note}${octave}`);
-//         sustainClassToggle(`${note}`, `${color}`);
-//         window.drawer = window.setInterval(drawLoop, 10);
-//         break;
-//     }
-//   }
-// });
-//
-// document.addEventListener('touchend', (e) => {
-//   // e.preventDefault();
-//
-//   if (MOUSECODES.hasOwnProperty(e.target.id)) {
-//     const note = e.target.id;
-//     const color = MOUSECODES[e.target.id][0];
-//     const hex = MOUSECODES[e.target.id][1];
-//
-//     // turn off note //
-//     if (note[0] === 'e') {
-//       instrument.triggerRelease(`${note.slice(1)}${octave + 1}`);
-//       sustainClassToggle(`${note}`, `${color}`);
-//     }
-//     else {
-//       instrument.triggerRelease(`${note}${octave}`);
-//       sustainClassToggle(`${note}`, `${color}`);
-//     }
-//   }
-// });
+document.addEventListener('touchstart', (e) => {
+  e.preventDefault();
+
+  if (e.target.className === 'natural' || e.target.className === 'flat') {
+    const note = e.target.id;
+    const color = MOUSECODES[e.target.id][0];
+    const hex = MOUSECODES[e.target.id][1];
+
+    window.hexOn = hex;
+
+    if (window.gradient) {
+      if (window.gradient.length === 4) { window.gradient.pop() }
+      window.gradient.unshift(hexOn);
+    }
+    else {
+      window.gradient = [hexOn];
+    }
+
+    switch (note[0]) {
+      case "e":
+        instrument.triggerAttack(`${note.slice(1)}${octave + 1}`);
+        sustainClassToggle(`${note}`, `${color}`);
+        window.drawer = window.setInterval(drawLoop, 10);
+        break;
+      default:
+        instrument.triggerAttack(`${note}${octave}`);
+        sustainClassToggle(`${note}`, `${color}`);
+        window.drawer = window.setInterval(drawLoop, 10);
+        break;
+    }
+  }
+});
+
+document.addEventListener('touchend', (e) => {
+  // e.preventDefault();
+
+  if (MOUSECODES.hasOwnProperty(e.target.id)) {
+    const note = e.target.id;
+    const color = MOUSECODES[e.target.id][0];
+    const hex = MOUSECODES[e.target.id][1];
+
+    // turn off note //
+    if (note[0] === 'e') {
+      instrument.triggerRelease(`${note.slice(1)}${octave + 1}`);
+      sustainClassToggle(`${note}`, `${color}`);
+    }
+    else {
+      instrument.triggerRelease(`${note}${octave}`);
+      sustainClassToggle(`${note}`, `${color}`);
+    }
+  }
+});
 
 //////////////////////
 //// mouse events ////
 //////////////////////
 //
-// document.addEventListener('contextmenu', (e) => e.preventDefault());
-//
-// document.addEventListener('mouseover', (e) => {
-//   if (e.srcElement.id === 'efxPane') { toggleEFX() }
-// });-
-//
-// document.addEventListener('mouseout', (e) => {
-//   if (e.srcElement.id === 'efxPane') { toggleEFX() }
-// });
-
-// document.addEventListener('click', (e) => {
-  // if (e.target.className === 'instrument') {
-  //   const type = (e.target.id);
-  //   switch (type) {
-  //     case 'triangle':
-  //       instrument = INSTRUMENTS["synth"];
-  //       instrument.set({ oscillator: { type: "triangle" } });
-  //       instrument.volume.value = 0;
-  //       toggleInst(type, 'lightblue');
-  //       octave = 4;
-  //       break;
-  //     case 'square':
-  //       instrument = INSTRUMENTS["synth"];
-  //       instrument.set({ oscillator: { type: "square" } });
-  //       instrument.volume.value = -10;
-  //       toggleInst(type, 'orangeyellow');
-  //       octave = 4;
-  //       break;
-  //     case 'sine':
-  //       instrument = INSTRUMENTS["synth"];
-  //       instrument.set({ oscillator: { type: "sine" } });
-  //       instrument.volume.value = -5;
-  //       toggleInst(type, 'green');
-  //       octave = 4;
-  //       break;
-  //     case 'membrane':
-  //       instrument = INSTRUMENTS["membrane"];
-  //       instrument.connect(waveform);
-  //       // instrument.connect(meter);
-  //       instrument.volume.value = -3;
-  //       toggleInst(type, 'redorange');
-  //       octave = 1;
-  //       break;
-  //     case 'fm':
-  //       instrument = INSTRUMENTS["fm"];
-  //       instrument.connect(waveform);
-  //       // instrument.connect(meter);
-  //       instrument.volume.value = 0;
-  //       toggleInst(type, 'purple');
-  //       octave = 2;
-  //       break;
-  //   }
-  // }
-  // if (e.target.id === 'mute') {
-  //   if (e.target.innerHTML === 'volume_up') {
-  //     e.target.innerHTML = 'volume_off';
-  //     Tone.Master.mute = true;
-  //   }
-  //   else {
-  //     e.target.innerHTML = 'volume_up';
-  //     Tone.Master.mute = false;
-  //   }
-  // }
-  // if (e.target.id === 'help' || e.target.className === 'close-instructions') {
-  //   const instructions = document.getElementsByClassName('instructions-container');
-  //   if (instructions[0].className.split(" ")[1] === 'invisible') {
-  //     toggleHelp();
-  //     setTimeout(() => toggleInvisible(), 0);
-  //   }
-  //   else {
-  //     toggleInvisible();
-  //     setTimeout(() => toggleHelp(), 400);
-  //   }
-  //
-  //   if (Tone.context.state !== 'running') {
-  //     Tone.context.resume();
-  //   }
-  // }
-  // if (e.target.id === 'octaveDown') {
-  //   if (octave > 1) {
-  //     octave--;
-  //     toggleOn('octave');
-  //     setTimeout(() => toggleOn('octave'), 70);
-  //   }
-  // }
-  // if (e.target.id === 'octaveUp') {
-  //   if (octave < 6) {
-  //     octave++;
-  //     toggleOn('octave');
-  //     setTimeout(() => toggleOn('octave'), 70);
-  //   }
-  // }
-// });
+$(document).contextmenu(e => e.preventDefault());
 
 $(document).ready(() => {
   const $keys = $('.naturals-group, .flats-group');
@@ -366,6 +275,9 @@ $(document).ready(() => {
   const $help = $('#ok-button, #help');
   const $octaveUp = $('#octaveUp');
   const $octaveDown = $('#octaveDown');
+  const $efxPane = $('#efxPane');
+  const $efxContainer = $('#efxContainer');
+  const $efxButtons = $('.efxButton');
 
       $keys.mousedown(e => {
         e.preventDefault();
@@ -529,6 +441,31 @@ $(document).ready(() => {
           setTimeout(() => { $octave.toggleClass('active') }, 120);
         }
       });
+
+      $efxPane.click(e => {
+        const val = efxPanel ? '-205px' : '0px';
+        efxPanel = !efxPanel;
+
+        $efxContainer.animate({ bottom: `${val}`}, 350);
+      });
+
+      $efxButtons.click(e => {
+        const effectName = e.target.id;
+        let effect = FXBANK[effectName];
+
+        if (!ACTIVEFX[effect]) {
+          instrument.connect(effect);
+          effect.connect(waveform);
+          // effect.connect(meter);
+          ACTIVEFX[effect] = true;
+          toggleOn(effectName);
+        }
+        else {
+          instrument.disconnect(effect);
+          ACTIVEFX[effect] = false;
+          toggleOn(effectName);
+        }
+      });
 });
 
 //////////////////////
@@ -595,11 +532,11 @@ document.addEventListener('keydown', (e) => {
         break;
       case "down":
         effect.wet.value -= 0.1;
-        $(`.${effectStr}`)[0].value -= 0.1;
+        $(`.${effectStr}`)[0].value -= 0.2;
         break;
       case "up":
         effect.wet.value += 0.1;
-        $(`.${effectStr}`)[0].value += 0.1;
+        $(`.${effectStr}`)[0].value += 0.2;
         break;
     }
   }
