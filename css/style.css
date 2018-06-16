@@ -26,9 +26,11 @@ a {
   position: absolute;
   z-index: 1000;
   display: flex;
+  display: none;
   justify-content: center;
   align-items: center;
-  top: 22%;
+  top: 10%;
+  bottom: 10%;
   left: auto;
   width: auto;
   border: 3px double white;
@@ -43,6 +45,10 @@ a {
   justify-content: space-evenly;
   text-align: center;
   color: white;
+}
+
+.instructions p {
+  font-size: 18px;
 }
 
 .instructions h4 {
@@ -102,11 +108,11 @@ a {
 
 .links img {
   filter: invert(100%);
-  transition: all .2 ease-in-out;
+  transition: all .2s ease-in-out;
 }
 
 .links img:hover {
-  transform: scale(1.1);
+  transform: scale(1.2);
 }
 
 #github, #mailto, #website {
@@ -349,6 +355,11 @@ a {
   cursor: pointer;
 }
 
+.efxButton:hover {
+  border: 1px solid white;
+  color: white;
+}
+
 .effect {
   display: flex;
   justify-content: space-around;
@@ -380,7 +391,7 @@ progress[value]::-webkit-progress-value {
 }
 
 .active {
-  color: lightgreen;
+  color: lightgreen !important;
 }
 
 .invisible {

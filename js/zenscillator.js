@@ -69,6 +69,7 @@ let reverb = new Tone.Freeverb(0.88, 2000).toMaster();
 let vibrato = new Tone.Vibrato(8, 0.2).toMaster();
 
 let efxPanel = false;
+
 // add little indicator for vibrato!
 // also add pitch bend! could be control and option
 
@@ -133,19 +134,9 @@ instrument.connect(waveform);
 //////  canvas  //////
 //////////////////////
 
-document.addEventListener("DOMContentLoaded", () => {
-  const canvas = document.getElementById("canvas");
-  const ctx = canvas.getContext("2d");
-
-  ctx.canvas.width = $('#canvas').width();
-  ctx.canvas.height = $('#canvas').height();
-
-  $('.instructions-container').toggleClass('invisible');
-});
-
 //----------------------------//
 
-function drawLoop() {
+const drawLoop = () => {
   const canvas = document.getElementById("canvas");
   const ctx = canvas.getContext("2d");
   ctx.canvas.width = $('#canvas').width();
@@ -165,7 +156,7 @@ function drawLoop() {
 
   ctx.beginPath();
   ctx.lineJoin = "round";
-  ctx.lineWidth = 6;
+  ctx.lineWidth = 5;
 
   ctx.moveTo(0, (values[0] + 1) / 2 * canvasHeight);
   for (let i = 1, len = values.length; i < len; i += 1) {
@@ -175,15 +166,6 @@ function drawLoop() {
     ctx.lineTo(x, y);
   }
   ctx.stroke();
-
-  // setTimeout(() => {
-  //   if (level !== -Infinity && level < -70) {
-  //
-  //     window.clearInterval(window.drawer);
-  //     ctx.clearRect(0, 0, canvasWidth, canvasHeight);
-  //     window.gradient = [];
-  //   }
-  // }, 150);
 }
 
 //////////////////////
@@ -264,8 +246,6 @@ document.addEventListener('touchend', (e) => {
 //////////////////////
 //// mouse events ////
 //////////////////////
-//
-$(document).contextmenu(e => e.preventDefault());
 
 $(document).ready(() => {
   const $keys = $('.naturals-group, .flats-group');
@@ -278,10 +258,19 @@ $(document).ready(() => {
   const $efxPane = $('#efxPane');
   const $efxContainer = $('#efxContainer');
   const $efxButtons = $('.efxButton');
+  const $canvas = $('#canvas');
+  const ctx = $canvas[0].getContext('2d');
 
+      $body.contextmenu(e => e.preventDefault());
+
+      ctx.canvas.width = $canvas.width();
+      ctx.canvas.height = $canvas.height();
+
+      $('#instructions-container').fadeIn(1000);
+
+      // click to play notes. Mouseup and mousemove events inside.
       $keys.mousedown(e => {
         e.preventDefault();
-
 
         let note = e.target.id;
         let color = MOUSECODES[note][0];
@@ -300,25 +289,24 @@ $(document).ready(() => {
           window.gradient = [hexOn];
         }
 
-        switch (note[0]) {
-          case "e":
-            instrument.triggerAttack(`${note.slice(1)}${octave + 1}`);
-            sustainClassToggle(`${note}`, `${color}`);
-            window.drawer = window.setInterval(drawLoop, 10);
-            break;
-          default:
-            instrument.triggerAttack(`${note}${octave}`);
-            sustainClassToggle(`${note}`, `${color}`);
-            window.drawer = window.setInterval(drawLoop, 10);
-            break;
+        if (note[0] !== "e") {
+          instrument.triggerAttack(`${note}${octave}`);
+        }
+        else {
+          instrument.triggerAttack(`${note.slice(1)}${octave + 1}`);
         }
 
-        $keys.mousemove(eMove => {
-            if (eMove.target.id !== note) {
-              $target.trigger('mouseup');
-              $(eMove.target).trigger('mousedown');
-            }
-        });
+        sustainClassToggle(`${note}`, `${color}`);
+
+        if (window.timeout) { clearTimeout(window.timeout) }
+
+        if (!window.drawer) {
+          window.drawer = window.setInterval(drawLoop, 10);
+        }
+        else {
+          clearInterval(window.drawer);
+          window.drawer = window.setInterval(drawLoop, 10);
+        }
 
         $keys.mouseup(eKeyup => {
 
@@ -328,18 +316,31 @@ $(document).ready(() => {
           const colorUp = MOUSECODES[noteUp][0];
 
           // turn off note //
-          if (noteUp[0] === 'e') {
-            instrument.triggerRelease(`${noteUp.slice(1)}${octave + 1}`);
-            sustainClassToggle(`${noteUp}`, `${colorUp}`);
+          if (noteUp[0] !== 'e') {
+            instrument.triggerRelease(`${noteUp}${octave}`);
           }
           else {
-            instrument.triggerRelease(`${noteUp}${octave}`);
-            sustainClassToggle(`${noteUp}`, `${colorUp}`);
+            instrument.triggerRelease(`${noteUp.slice(1)}${octave + 1}`);
           }
+
+          sustainClassToggle(`${noteUp}`, `${colorUp}`);
+
+          if (window.timeout) { clearTimeout(window.timeout) }
+
+          window.timeout = setTimeout(() => {
+            clearInterval(window.drawer);
+          }, 2500);
 
           $keys.off('mousemove mouseup');
           $body.off('mouseup');
 
+        });
+
+        $keys.mousemove(eMove => {
+            if (eMove.target.id !== note) {
+              $target.trigger('mouseup');
+              $(eMove.target).trigger('mousedown');
+            }
         });
 
         $body.mouseup(eUp => {
@@ -466,146 +467,153 @@ $(document).ready(() => {
           toggleOn(effectName);
         }
       });
-});
 
-//////////////////////
-/// keyboard events //
-//////////////////////
-
-document.addEventListener('keydown', (e) => {
-  // e.preventDefault();
-  if (Tone.context.state !== 'running') {
-    return;
-  }
-
-  if (KEYCODES.hasOwnProperty(e.keyCode)) {
-    if (e.repeat) { return null }
-
-    // turn on note //
-    const note = KEYCODES[e.keyCode][0];
-    const color = KEYCODES[e.keyCode][1];
-    const hex = KEYCODES[e.keyCode][2];
-    window.hexOn = hex;
-
-    if (window.gradient) {
-      if (window.gradient.length === 4) { window.gradient.pop() }
-      window.gradient.unshift(hexOn);
-    }
-    else {
-      window.gradient = [hexOn];
-    }
-
-    switch (note[0]) {
-      case "e":
-        instrument.triggerAttack(`${note.slice(1)}${octave + 1}`);
-        sustainClassToggle(`${note}`, `${color}`);
-        window.drawer = window.setInterval(drawLoop, 10);
-        break;
-      default:
-        instrument.triggerAttack(`${note}${octave}`);
-        sustainClassToggle(`${note}`, `${color}`);
-        window.drawer = window.setInterval(drawLoop, 10);
-        break;
-    }
-  }
-  else if (FXCODES.hasOwnProperty(e.keyCode)) {
-    let effect = FXCODES[e.keyCode][0];
-    let change = FXCODES[e.keyCode][1];
-    let effectStr = FXCODES[e.keyCode][2];
-
-    if ((e.repeat) && (change === "toggle")) { return null }
-
-    switch (change) {
-      case "toggle":
-        if (ACTIVEFX[effect]) {
-          instrument.disconnect(effect);
-          ACTIVEFX[effect] = false;
-          toggleOn(effectStr);
+      // keyboard to play notes. Keyup event inside
+      document.addEventListener('keydown', e => {
+        if (Tone.context.state !== 'running') {
+          return;
         }
-        else {
-          instrument.connect(effect);
-          effect.connect(waveform);
-          // effect.connect(meter);
-          ACTIVEFX[effect] = true;
-          toggleOn(effectStr);
+
+        const key = e.keyCode;
+
+        if (KEYCODES.hasOwnProperty(key)) {
+
+            if (e.repeat) { return null }
+
+            // turn on note //
+            const note = KEYCODES[key][0];
+            const color = KEYCODES[key][1];
+            const hex = KEYCODES[key][2];
+
+            window.hexOn = hex;
+
+            if (window.gradient) {
+              if (window.gradient.length === 4) {
+                window.gradient.pop();
+              }
+              window.gradient.unshift(hexOn);
+            }
+            else {
+              window.gradient = [hexOn];
+            }
+
+            if (note[0] !== "e") {
+              instrument.triggerAttack(`${note}${octave}`);
+            }
+            else {
+              instrument.triggerAttack(`${note.slice(1)}${octave + 1}`);
+            }
+
+            sustainClassToggle(`${note}`, `${color}`);
+
+            if (window.timeout) { clearTimeout(window.timeout) }
+
+            if (!window.drawer) {
+              window.drawer = window.setInterval(drawLoop, 10);
+            }
+            else {
+              clearInterval(window.drawer);
+              window.drawer = window.setInterval(drawLoop, 10);
+            }
         }
-        break;
-      case "down":
-        effect.wet.value -= 0.1;
-        $(`.${effectStr}`)[0].value -= 0.2;
-        break;
-      case "up":
-        effect.wet.value += 0.1;
-        $(`.${effectStr}`)[0].value += 0.2;
-        break;
-    }
-  }
-  else if (e.keyCode === 189 && octave > 1) {
-    octave--;
-    toggleOn('octave');
-  }
-  else if (e.keyCode === 187 && octave < 6) {
-    octave++;
-    toggleOn('octave');
-  }
-  // change octaves on '+' and '-' keys //
+        else if (FXCODES.hasOwnProperty(key)) {
+          let effect = FXCODES[key][0];
+          let change = FXCODES[key][1];
+          let effectStr = FXCODES[key][2];
+
+          if ((e.repeat) && (change === "toggle")) { return null }
+
+          switch (change) {
+            case "toggle":
+              if (ACTIVEFX[effect]) {
+                instrument.disconnect(effect);
+                ACTIVEFX[effect] = false;
+                toggleOn(effectStr);
+              }
+              else {
+                instrument.connect(effect);
+                effect.connect(waveform);
+                // effect.connect(meter);
+                ACTIVEFX[effect] = true;
+                toggleOn(effectStr);
+              }
+              break;
+            case "down":
+              effect.wet.value -= 0.1;
+              $(`.${effectStr}`)[0].value -= 0.2;
+              break;
+            case "up":
+              effect.wet.value += 0.1;
+              $(`.${effectStr}`)[0].value += 0.2;
+              break;
+          }
+        }
+        else if (e.keyCode === 189 && octave > 1) {
+          octave--;
+          toggleOn('octave');
+        }
+        else if (e.keyCode === 187 && octave < 6) {
+          octave++;
+          toggleOn('octave');
+        }
+        // change octaves on '+' and '-' keys //
+
+      });
+
+      document.addEventListener('keyup', e => {
+        if (Tone.context.state !== 'running') {
+          return;
+        }
+        const keyUp = e.keyCode;
+
+        if (KEYCODES.hasOwnProperty(keyUp)) {
+          const noteUp = KEYCODES[keyUp][0];
+          const colorUp = KEYCODES[keyUp][1];
+
+            // turn off noteUp //
+            if (noteUp[0] !== 'e') {
+              instrument.triggerRelease(`${noteUp}${octave}`);
+            }
+            else {
+              instrument.triggerRelease(`${noteUp.slice(1)}${octave + 1}`);
+            }
+
+            sustainClassToggle(`${noteUp}`, `${colorUp}`);
+
+            if (window.timeout) { clearTimeout(window.timeout) }
+
+            window.timeout = setTimeout(() => {
+              clearInterval(window.drawer);
+            }, 2500);
+        }
+        else if (FXCODES.hasOwnProperty(keyUp)) {
+          let effect = FXCODES[keyUp][0];
+          let change = FXCODES[keyUp][1];
+          let effectStr = FXCODES[keyUp][2];
+
+          if (effectStr === 'vibrato') {
+            instrument.disconnect(effect);
+            ACTIVEFX[effect] = false;
+            toggleOn(effectStr);
+          }
+        }
+        else if (e.keyCode === 189) {
+          if (octave > 1) {
+            toggleOn('octave');
+          }
+          else if (octave === 1) {
+            $('#octave').removeClass('active');
+          }
+        }
+        else if (e.keyCode === 187) {
+          if (octave < 6) {
+            toggleOn('octave');
+          }
+          else if (octave === 6) {
+            $('#octave').removeClass('active');
+          }
+        }
+
+      });
+
 });
-
-document.addEventListener('keyup', (e) => {
-  if (Tone.context.state !== 'running') {
-    return;
-  }
-
-  if (KEYCODES.hasOwnProperty(e.keyCode)) {
-    const note = KEYCODES[e.keyCode][0];
-    const color = KEYCODES[e.keyCode][1];
-    const hex = KEYCODES[e.keyCode][2];
-
-    // turn off note //
-    if (note[0] === 'e') {
-      instrument.triggerRelease(`${note.slice(1)}${octave + 1}`);
-      sustainClassToggle(`${note}`, `${color}`);
-    }
-    else {
-      instrument.triggerRelease(`${note}${octave}`);
-      sustainClassToggle(`${note}`, `${color}`);
-    }
-  }
-  else if (FXCODES.hasOwnProperty(e.keyCode)) {
-    let effect = FXCODES[e.keyCode][0];
-    let change = FXCODES[e.keyCode][1];
-    let effectStr = FXCODES[e.keyCode][2];
-
-    if (effectStr === 'vibrato') {
-      instrument.disconnect(effect);
-      ACTIVEFX[effect] = false;
-      toggleOn(effectStr);
-    }
-  }
-  else if (e.keyCode === 189) {
-    if (octave > 1) {
-      toggleOn('octave');
-    }
-    else if (octave === 1) {
-      $('#octave').removeClass('active');
-    }
-  }
-  else if (e.keyCode === 187) {
-    if (octave < 6) {
-      toggleOn('octave');
-    }
-    else if (octave === 6) {
-      $('#octave').removeClass('active');
-    }
-  }
-});
-
-
-
-
-
-
-
-
-//
-//
