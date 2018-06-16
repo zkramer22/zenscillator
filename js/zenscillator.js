@@ -168,7 +168,7 @@ function drawLoop() {
 
   // setTimeout(() => {
   //   if (level !== -Infinity && level < -70) {
-  //     debugger
+  //
   //     window.clearInterval(window.drawer);
   //     ctx.clearRect(0, 0, canvasWidth, canvasHeight);
   //     window.gradient = [];
@@ -194,17 +194,9 @@ const toggleEFX = () => {
   }, 200);
 };
 
-const toggleHelp = () => {
-  $('.instructions-container').toggleClass('hidden');
-};
-
-const toggleInvisible = () => {
-  $('.instructions-container').toggleClass('invisible');
-}
-
-const toggleOn = (effectStr) => {
-  $(`#${effectStr}`).toggleClass('active');
-};
+// const toggleOn = (effectStr) => {
+//   $(`#${effectStr}`).toggleClass('active');
+// };
 
 const toggleInst = (inst, color) => {
   $('.instrument').attr('class', 'instrument');
@@ -214,241 +206,329 @@ const toggleInst = (inst, color) => {
 //////////////////////
 //// touch events ////
 //////////////////////
-
-document.addEventListener('touchstart', (e) => {
-  e.preventDefault();
-
-  if (e.target.className === 'natural' || e.target.className === 'flat') {
-    const note = e.target.id;
-    const color = MOUSECODES[e.target.id][0];
-    const hex = MOUSECODES[e.target.id][1];
-
-    window.hexOn = hex;
-
-    if (window.gradient) {
-      if (window.gradient.length === 4) { window.gradient.pop() }
-      window.gradient.unshift(hexOn);
-    }
-    else {
-      window.gradient = [hexOn];
-    }
-
-    switch (note[0]) {
-      case "e":
-        instrument.triggerAttack(`${note.slice(1)}${octave + 1}`);
-        sustainClassToggle(`${note}`, `${color}`);
-        window.drawer = window.setInterval(drawLoop, 10);
-        break;
-      default:
-        instrument.triggerAttack(`${note}${octave}`);
-        sustainClassToggle(`${note}`, `${color}`);
-        window.drawer = window.setInterval(drawLoop, 10);
-        break;
-    }
-  }
-});
-
-document.addEventListener('touchend', (e) => {
-  // e.preventDefault();
-
-  if (MOUSECODES.hasOwnProperty(e.target.id)) {
-    const note = e.target.id;
-    const color = MOUSECODES[e.target.id][0];
-    const hex = MOUSECODES[e.target.id][1];
-
-    // turn off note //
-    if (note[0] === 'e') {
-      instrument.triggerRelease(`${note.slice(1)}${octave + 1}`);
-      sustainClassToggle(`${note}`, `${color}`);
-    }
-    else {
-      instrument.triggerRelease(`${note}${octave}`);
-      sustainClassToggle(`${note}`, `${color}`);
-    }
-  }
-});
+//
+// document.addEventListener('touchstart', (e) => {
+//   e.preventDefault();
+//
+//   if (e.target.className === 'natural' || e.target.className === 'flat') {
+//     const note = e.target.id;
+//     const color = MOUSECODES[e.target.id][0];
+//     const hex = MOUSECODES[e.target.id][1];
+//
+//     window.hexOn = hex;
+//
+//     if (window.gradient) {
+//       if (window.gradient.length === 4) { window.gradient.pop() }
+//       window.gradient.unshift(hexOn);
+//     }
+//     else {
+//       window.gradient = [hexOn];
+//     }
+//
+//     switch (note[0]) {
+//       case "e":
+//         instrument.triggerAttack(`${note.slice(1)}${octave + 1}`);
+//         sustainClassToggle(`${note}`, `${color}`);
+//         window.drawer = window.setInterval(drawLoop, 10);
+//         break;
+//       default:
+//         instrument.triggerAttack(`${note}${octave}`);
+//         sustainClassToggle(`${note}`, `${color}`);
+//         window.drawer = window.setInterval(drawLoop, 10);
+//         break;
+//     }
+//   }
+// });
+//
+// document.addEventListener('touchend', (e) => {
+//   // e.preventDefault();
+//
+//   if (MOUSECODES.hasOwnProperty(e.target.id)) {
+//     const note = e.target.id;
+//     const color = MOUSECODES[e.target.id][0];
+//     const hex = MOUSECODES[e.target.id][1];
+//
+//     // turn off note //
+//     if (note[0] === 'e') {
+//       instrument.triggerRelease(`${note.slice(1)}${octave + 1}`);
+//       sustainClassToggle(`${note}`, `${color}`);
+//     }
+//     else {
+//       instrument.triggerRelease(`${note}${octave}`);
+//       sustainClassToggle(`${note}`, `${color}`);
+//     }
+//   }
+// });
 
 //////////////////////
 //// mouse events ////
 //////////////////////
+//
+// document.addEventListener('contextmenu', (e) => e.preventDefault());
+//
+// document.addEventListener('mouseover', (e) => {
+//   if (e.srcElement.id === 'efxPane') { toggleEFX() }
+// });-
+//
+// document.addEventListener('mouseout', (e) => {
+//   if (e.srcElement.id === 'efxPane') { toggleEFX() }
+// });
 
-document.addEventListener('contextmenu', (e) => e.preventDefault());
-
-document.addEventListener('mouseover', (e) => {
-  if (e.srcElement.id === 'efxPane') { toggleEFX() }
-});-
-
-document.addEventListener('mouseout', (e) => {
-  if (e.srcElement.id === 'efxPane') { toggleEFX() }
-});
-
-document.addEventListener('click', (e) => {
-  if (e.target.className === 'instrument') {
-    const type = (e.target.id);
-    switch (type) {
-      case 'triangle':
-        instrument = INSTRUMENTS["synth"];
-        instrument.set({ oscillator: { type: "triangle" } });
-        instrument.volume.value = 0;
-        toggleInst(type, 'lightblue');
-        octave = 4;
-        break;
-      case 'square':
-        instrument = INSTRUMENTS["synth"];
-        instrument.set({ oscillator: { type: "square" } });
-        instrument.volume.value = -10;
-        toggleInst(type, 'orangeyellow');
-        octave = 4;
-        break;
-      case 'sine':
-        instrument = INSTRUMENTS["synth"];
-        instrument.set({ oscillator: { type: "sine" } });
-        instrument.volume.value = -5;
-        toggleInst(type, 'green');
-        octave = 4;
-        break;
-      case 'membrane':
-        instrument = INSTRUMENTS["membrane"];
-        instrument.connect(waveform);
-        // instrument.connect(meter);
-        instrument.volume.value = -3;
-        toggleInst(type, 'redorange');
-        octave = 1;
-        break;
-      case 'fm':
-        instrument = INSTRUMENTS["fm"];
-        instrument.connect(waveform);
-        // instrument.connect(meter);
-        instrument.volume.value = 0;
-        toggleInst(type, 'purple');
-        octave = 2;
-        break;
-    }
-  }
-  else if (e.target.id === 'mute') {
-    if (e.target.innerHTML === 'volume_up') {
-      e.target.innerHTML = 'volume_off';
-      Tone.Master.mute = true;
-    }
-    else {
-      e.target.innerHTML = 'volume_up';
-      Tone.Master.mute = false;
-    }
-  }
-  else if (e.target.id === 'help' || e.target.className === 'close-instructions') {
-    const instructions = document.getElementsByClassName('instructions-container');
-    if (instructions[0].className.split(" ")[1] === 'invisible') {
-      toggleHelp();
-      setTimeout(() => toggleInvisible(), 0);
-    }
-    else {
-      toggleInvisible();
-      setTimeout(() => toggleHelp(), 400);
-    }
-    if (Tone.context.state !== 'running') {
-      Tone.context.resume();
-    }
-  }
-  else if (e.target.id === 'octaveDown') {
-    if (octave > 1) {
-      octave--;
-      toggleOn('octave');
-      setTimeout(() => toggleOn('octave'), 70);
-    }
-  }
-  else if (e.target.id === 'octaveUp') {
-    if (octave < 6) {
-      octave++;
-      toggleOn('octave');
-      setTimeout(() => toggleOn('octave'), 70);
-    }
-  }
-});
+// document.addEventListener('click', (e) => {
+  // if (e.target.className === 'instrument') {
+  //   const type = (e.target.id);
+  //   switch (type) {
+  //     case 'triangle':
+  //       instrument = INSTRUMENTS["synth"];
+  //       instrument.set({ oscillator: { type: "triangle" } });
+  //       instrument.volume.value = 0;
+  //       toggleInst(type, 'lightblue');
+  //       octave = 4;
+  //       break;
+  //     case 'square':
+  //       instrument = INSTRUMENTS["synth"];
+  //       instrument.set({ oscillator: { type: "square" } });
+  //       instrument.volume.value = -10;
+  //       toggleInst(type, 'orangeyellow');
+  //       octave = 4;
+  //       break;
+  //     case 'sine':
+  //       instrument = INSTRUMENTS["synth"];
+  //       instrument.set({ oscillator: { type: "sine" } });
+  //       instrument.volume.value = -5;
+  //       toggleInst(type, 'green');
+  //       octave = 4;
+  //       break;
+  //     case 'membrane':
+  //       instrument = INSTRUMENTS["membrane"];
+  //       instrument.connect(waveform);
+  //       // instrument.connect(meter);
+  //       instrument.volume.value = -3;
+  //       toggleInst(type, 'redorange');
+  //       octave = 1;
+  //       break;
+  //     case 'fm':
+  //       instrument = INSTRUMENTS["fm"];
+  //       instrument.connect(waveform);
+  //       // instrument.connect(meter);
+  //       instrument.volume.value = 0;
+  //       toggleInst(type, 'purple');
+  //       octave = 2;
+  //       break;
+  //   }
+  // }
+  // if (e.target.id === 'mute') {
+  //   if (e.target.innerHTML === 'volume_up') {
+  //     e.target.innerHTML = 'volume_off';
+  //     Tone.Master.mute = true;
+  //   }
+  //   else {
+  //     e.target.innerHTML = 'volume_up';
+  //     Tone.Master.mute = false;
+  //   }
+  // }
+  // if (e.target.id === 'help' || e.target.className === 'close-instructions') {
+  //   const instructions = document.getElementsByClassName('instructions-container');
+  //   if (instructions[0].className.split(" ")[1] === 'invisible') {
+  //     toggleHelp();
+  //     setTimeout(() => toggleInvisible(), 0);
+  //   }
+  //   else {
+  //     toggleInvisible();
+  //     setTimeout(() => toggleHelp(), 400);
+  //   }
+  //
+  //   if (Tone.context.state !== 'running') {
+  //     Tone.context.resume();
+  //   }
+  // }
+  // if (e.target.id === 'octaveDown') {
+  //   if (octave > 1) {
+  //     octave--;
+  //     toggleOn('octave');
+  //     setTimeout(() => toggleOn('octave'), 70);
+  //   }
+  // }
+  // if (e.target.id === 'octaveUp') {
+  //   if (octave < 6) {
+  //     octave++;
+  //     toggleOn('octave');
+  //     setTimeout(() => toggleOn('octave'), 70);
+  //   }
+  // }
+// });
 
 $(document).ready(() => {
-  $('.naturals-group, .flats-group').mousedown(e => {
-    e.preventDefault();
+  const $keys = $('.naturals-group, .flats-group');
+  const $body = $('body');
+  const $instruments = $('.instrument');
+  const $mute = $('#mute');
+  const $help = $('#ok-button, #help');
+  const $octaveUp = $('#octaveUp');
+  const $octaveDown = $('#octaveDown');
 
-    let note = e.target.id;
-    let color = MOUSECODES[e.target.id][0];
-    let hex = MOUSECODES[e.target.id][1];
-    const $target = $(e.target);
+      $keys.mousedown(e => {
+        e.preventDefault();
 
-    window.hexOn = hex;
 
-    if (window.gradient) {
-      if (window.gradient.length === 4) {
-        window.gradient.pop();
-      }
-      window.gradient.unshift(hexOn);
-    }
-    else {
-      window.gradient = [hexOn];
-    }
+        let note = e.target.id;
+        let color = MOUSECODES[note][0];
+        let hex = MOUSECODES[note][1];
+        const $target = $(e.target);
 
-    switch (note[0]) {
-      case "e":
-        instrument.triggerAttack(`${note.slice(1)}${octave + 1}`);
-        sustainClassToggle(`${note}`, `${color}`);
-        window.drawer = window.setInterval(drawLoop, 10);
-        break;
-      default:
-        instrument.triggerAttack(`${note}${octave}`);
-        sustainClassToggle(`${note}`, `${color}`);
-        window.drawer = window.setInterval(drawLoop, 10);
-        break;
-    }
+        window.hexOn = hex;
 
-    $('.naturals-group, .flats-group').mousemove(eMove => {
-        if (eMove.target.id != note) {
-          $target.trigger('mouseup');
-          $(eMove.target).trigger('mousedown');
+        if (window.gradient) {
+          if (window.gradient.length === 4) {
+            window.gradient.pop();
+          }
+          window.gradient.unshift(hexOn);
         }
-    });
+        else {
+          window.gradient = [hexOn];
+        }
 
-    $('body').mouseup(eUp => {
-      if (eUp.target.className === 'natural' || eUp.target.className === 'flat') {
-        return;
-      }
-      else {
-        $target.trigger('mouseup');
-      }
-    });
+        switch (note[0]) {
+          case "e":
+            instrument.triggerAttack(`${note.slice(1)}${octave + 1}`);
+            sustainClassToggle(`${note}`, `${color}`);
+            window.drawer = window.setInterval(drawLoop, 10);
+            break;
+          default:
+            instrument.triggerAttack(`${note}${octave}`);
+            sustainClassToggle(`${note}`, `${color}`);
+            window.drawer = window.setInterval(drawLoop, 10);
+            break;
+        }
 
-    // if a mouseup occurs and the target is not a natural or flat,
-    // trigger the mouseup for e.target.
-    // maybe set a listener on body and find target.
-    // OR just move the mouseup listener into here.
+        $keys.mousemove(eMove => {
+            if (eMove.target.id !== note) {
+              $target.trigger('mouseup');
+              $(eMove.target).trigger('mousedown');
+            }
+        });
 
-    // $('.keyboard-container').mouseover(eOver => {
-    //   console.log(eOver.target);
-    //   $(e.target).trigger('mouseup');
-    // });
+        $keys.mouseup(eKeyup => {
 
-  });
-// ------------------------------------------------------
-  $('.naturals-group, .flats-group').mouseup(e => {
-    e.preventDefault();
+          eKeyup.preventDefault();
 
-    const note = e.target.id;
-    const color = MOUSECODES[e.target.id][0];
-    const hex = MOUSECODES[e.target.id][1];
+          const noteUp = eKeyup.target.id;
+          const colorUp = MOUSECODES[noteUp][0];
 
-    // turn off note //
-    if (note[0] === 'e') {
-      instrument.triggerRelease(`${note.slice(1)}${octave + 1}`);
-      sustainClassToggle(`${note}`, `${color}`);
-    }
-    else {
-      instrument.triggerRelease(`${note}${octave}`);
-      sustainClassToggle(`${note}`, `${color}`);
-    }
+          // turn off note //
+          if (noteUp[0] === 'e') {
+            instrument.triggerRelease(`${noteUp.slice(1)}${octave + 1}`);
+            sustainClassToggle(`${noteUp}`, `${colorUp}`);
+          }
+          else {
+            instrument.triggerRelease(`${noteUp}${octave}`);
+            sustainClassToggle(`${noteUp}`, `${colorUp}`);
+          }
 
-    $('.naturals-group, .flats-group').off('mousemove');
-    $('body').off('mouseup');
+          $keys.off('mousemove mouseup');
+          $body.off('mouseup');
 
-  });
+        });
 
+        $body.mouseup(eUp => {
+          if (eUp.target.className === 'natural' || eUp.target.className === 'flat') {
+            return;
+          }
+          else {
+            $target.trigger('mouseup');
+          }
+        });
+
+      });
+
+      $instruments.click(e => {
+        const type = (e.target.id);
+
+        switch (type) {
+          case 'triangle':
+            instrument = INSTRUMENTS["synth"];
+            instrument.set({ oscillator: { type: "triangle" } });
+            instrument.volume.value = 0;
+            toggleInst(type, 'lightblue');
+            octave = 4;
+            break;
+          case 'square':
+            instrument = INSTRUMENTS["synth"];
+            instrument.set({ oscillator: { type: "square" } });
+            instrument.volume.value = -10;
+            toggleInst(type, 'orangeyellow');
+            octave = 4;
+            break;
+          case 'sine':
+            instrument = INSTRUMENTS["synth"];
+            instrument.set({ oscillator: { type: "sine" } });
+            instrument.volume.value = -5;
+            toggleInst(type, 'green');
+            octave = 4;
+            break;
+          case 'membrane':
+            instrument = INSTRUMENTS["membrane"];
+            instrument.connect(waveform);
+            // instrument.connect(meter);
+            instrument.volume.value = -3;
+            toggleInst(type, 'redorange');
+            octave = 1;
+            break;
+          case 'fm':
+            instrument = INSTRUMENTS["fm"];
+            instrument.connect(waveform);
+            // instrument.connect(meter);
+            instrument.volume.value = 0;
+            toggleInst(type, 'purple');
+            octave = 2;
+            break;
+        }
+
+      });
+
+      $mute.click(e => {
+        let status = e.target.innerHTML;
+        if (status === 'volume_up') {
+          e.target.innerHTML = 'volume_off';
+          Tone.Master.mute = true;
+        }
+        else {
+          e.target.innerHTML = 'volume_up';
+          Tone.Master.mute = false;
+        }
+      });
+
+      $help.click(e => {
+        const $instructions = $('#instructions-container');
+
+        if ($instructions.is(':hidden')) {
+          $instructions.fadeIn(100);
+        }
+        else {
+          $instructions.fadeOut(100);
+        }
+
+        if (Tone.context.state !== 'running') { Tone.context.resume() }
+
+      });
+
+      $octaveUp.click(e => {
+        if (octave < 6) {
+          const $octave = $('#octave');
+          octave++;
+          $octave.toggleClass('active')
+          setTimeout(() => { $octave.toggleClass('active') }, 120);
+        }
+      });
+
+      $octaveDown.click(e => {
+        if (octave > 1) {
+          const $octave = $('#octave');
+          octave--;
+          $octave.toggleClass('active')
+          setTimeout(() => { $octave.toggleClass('active') }, 120);
+        }
+      });
 });
 
 //////////////////////

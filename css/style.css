@@ -22,7 +22,7 @@ a {
   overflow: hidden;
 }
 
-.instructions-container {
+#instructions-container {
   position: absolute;
   z-index: 1000;
   display: flex;
@@ -35,8 +35,6 @@ a {
   border-radius: 15px;
   padding: 10px 20px 15px 20px;
   background-color: darkgrey;
-  transition: opacity .2s linear;
-  opacity: 1;
 }
 
 .instructions {
@@ -51,7 +49,7 @@ a {
   border-bottom: 1px solid white;
 }
 
-.close-instructions {
+#ok-button {
   align-self: center;
   padding-top: 10px;
   height: 30px;
@@ -63,7 +61,7 @@ a {
   transition: all .1s linear;
 }
 
-.close-instructions:hover {
+#ok-button:hover {
   background-color: rgb(216, 255, 216);
   cursor: pointer;
 }
@@ -123,7 +121,6 @@ a {
 
 #canvas {
   position: absolute;
-  /* z-index: 0; */
   top: 13%;
   height: 57%;
   width: 100%;
@@ -148,7 +145,7 @@ a {
 }
 
 #mute-container i, #help-container i {
-  transition: color .2s linear, font-size .2s linear;
+  transition: all .1s linear;
   color: rgba(255, 255, 255, 0.65);
   font-size: 2.5vw;
 }
@@ -460,6 +457,7 @@ progress[value]::-webkit-progress-value {
   justify-content: center;
   align-items: center;
   padding: 2px 0 2px 0;
+  transition: all .1s linear;
 }
 
 .key {
