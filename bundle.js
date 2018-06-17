@@ -256,9 +256,18 @@ const toggleOn = (effect) => {
 
 const toggleInst = (inst, color) => {
   $('.instrument').attr('class', 'instrument');
-  $(`#${inst}`).toggleClass(`${color}`);
+  $(`#${inst}`).toggleClass(`${color} current`);
 };
 
+const switchInst = () => {
+  const $currentInst = $('.current');
+
+  if ($currentInst.attr('id') === 'fm') {
+    $('#sine').trigger('click');
+  } else {
+    $currentInst.next().trigger('click');
+  }
+};
 //////////////////////
 //// touch events ////
 //////////////////////
@@ -543,6 +552,8 @@ $(document).ready(() => {
 
       // keyboard to play notes. Keyup event inside
       document.addEventListener('keydown', e => {
+        // e.preventDefault();
+
         if (__WEBPACK_IMPORTED_MODULE_0_tone___default.a.context.state !== 'running') {
           return;
         }
@@ -689,6 +700,12 @@ $(document).ready(() => {
 
       });
 
+      document.addEventListener('keypress', e => {
+        if (e.keyCode === 32) {
+          e.preventDefault();
+          switchInst();
+        }
+      });
 });
 
 
