@@ -13,6 +13,7 @@ a {
   position: absolute;
   display: flex;
   justify-content: center;
+  min-width: 850px;
   z-index: -3;
   top: 0;
   right: 0;
@@ -45,7 +46,7 @@ a {
 }
 
 .instructions p {
-  font-size: 18px;
+  font-size: 2vmin;
 }
 
 .instructions h4 {
@@ -153,7 +154,7 @@ a {
 #mute-container i, #help-container i {
   transition: all .1s linear;
   color: rgba(255, 255, 255, 0.65);
-  font-size: 2.5vw;
+  font-size: 2.5vmax;
 }
 
 #mute-container i:hover, #help-container i:hover {
@@ -531,8 +532,14 @@ progress[value]::-webkit-progress-value {
 
 /* media queries */
 
-@media (max-width: 800px) {
-  main {
-    overflow: scroll !important;
+@media (max-width: 850px) {
+  .gradient-background {
+    overflow-x: scroll;
   }
 }
+
+/* @media (max-height: 650px) {
+  .gradient-background {
+    overflow-y: scroll;
+  }
+} */
