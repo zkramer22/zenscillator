@@ -78,9 +78,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //////////////////////
 
 const INSTRUMENTS = {
-  "synth"     : new __WEBPACK_IMPORTED_MODULE_0_tone___default.a.PolySynth(16, __WEBPACK_IMPORTED_MODULE_0_tone___default.a.Synth),//.toMaster(),
-  "membrane"  : new __WEBPACK_IMPORTED_MODULE_0_tone___default.a.PolySynth(2, __WEBPACK_IMPORTED_MODULE_0_tone___default.a.MembraneSynth),//.toMaster(),
-  "fm"        : new __WEBPACK_IMPORTED_MODULE_0_tone___default.a.PolySynth(2, __WEBPACK_IMPORTED_MODULE_0_tone___default.a.FMSynth)//.toMaster()
+  "synth"     : new __WEBPACK_IMPORTED_MODULE_0_tone___default.a.PolySynth(16, __WEBPACK_IMPORTED_MODULE_0_tone___default.a.Synth),
+  "membrane"  : new __WEBPACK_IMPORTED_MODULE_0_tone___default.a.PolySynth(2, __WEBPACK_IMPORTED_MODULE_0_tone___default.a.MembraneSynth),
+  "fm"        : new __WEBPACK_IMPORTED_MODULE_0_tone___default.a.PolySynth(2, __WEBPACK_IMPORTED_MODULE_0_tone___default.a.FMSynth)
 };
 
 const KEYCODES = {
@@ -267,7 +267,7 @@ const drawLoop = () => {
 
 // light up keyboard notes
 const sustainClassToggle = (note, color) => {
-  $(`#${note}`).toggleClass(`${color}`);
+  $(`#${note}`).toggleClass(`${color}`).toggleClass('keydown');
 };
 
 const toggleOn = (effect) => {

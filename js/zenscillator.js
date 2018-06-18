@@ -5,9 +5,9 @@ import Tone from 'tone';
 //////////////////////
 
 const INSTRUMENTS = {
-  "synth"     : new Tone.PolySynth(16, Tone.Synth),//.toMaster(),
-  "membrane"  : new Tone.PolySynth(2, Tone.MembraneSynth),//.toMaster(),
-  "fm"        : new Tone.PolySynth(2, Tone.FMSynth)//.toMaster()
+  "synth"     : new Tone.PolySynth(16, Tone.Synth),
+  "membrane"  : new Tone.PolySynth(2, Tone.MembraneSynth),
+  "fm"        : new Tone.PolySynth(2, Tone.FMSynth)
 };
 
 const KEYCODES = {
@@ -194,7 +194,7 @@ const drawLoop = () => {
 
 // light up keyboard notes
 const sustainClassToggle = (note, color) => {
-  $(`#${note}`).toggleClass(`${color}`);
+  $(`#${note}`).toggleClass(`${color}`).toggleClass('keydown');
 };
 
 const toggleOn = (effect) => {

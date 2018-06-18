@@ -191,6 +191,8 @@ a {
   width: 95%;
   opacity: 0.5;
   box-shadow: 0px 0px 30px 12px rgb(0, 0, 0);
+  border-radius: 5px;
+  font-size: 18px;
 }
 
 #spacer1 {
@@ -248,59 +250,98 @@ a {
 }
 
 .flat {
-  width: 7%;
+  width: 8%;
   z-index: 3;
   background-color: rgb(0, 0, 0);
   padding-bottom: 5px;
 }
 
 .red {
-  background-color: rgb(255, 48, 48);
+  background-color: rgba(255, 48, 48, 1);
 }
 
 .redorange {
-  background-color: rgb(255, 106, 48);
+  background-color: rgba(255, 106, 48, 1);
 }
 
 .orange {
-  background-color: rgb(255, 175, 48);
+  background-color: rgba(255, 175, 48, 1);
 }
 
 .orangeyellow {
-  background-color: rgb(255, 217, 48);
+  background-color: rgba(255, 217, 48, 1);
 }
 
 .yellow {
-  background-color: rgb(251, 255, 48);
+  background-color: rgba(251, 255, 48, 1);
 }
 
 .green {
-  background-color: rgb(75, 255, 48);
+  background-color: rgba(75, 255, 48, 1);
 }
 
 .teal {
-  background-color: rgb(48, 255, 185);
+  background-color: rgba(48, 255, 185, 1);
 }
 
 .lightblue {
-  background-color: rgb(48, 255, 251);
+  background-color: rgba(48, 255, 251, 1);
 }
 
 .blue {
-  background-color: rgb(48, 185, 255);
+  background-color: rgba(48, 185, 255, 1);
 }
 
 .bluepurple {
-  background-color: rgb(48, 72, 255);
+  background-color: rgba(48, 72, 255, 1);
 }
 
 .purple {
-  background-color: rgb(192, 48, 255);
+  background-color: rgba(192, 48, 255, 1);
 }
 
 .magenta {
-  background-color: rgb(255, 48, 175);
+  background-color: rgba(255, 48, 175, 1);
 }
+
+.keyboard-image {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 35px;
+  width: 34px;
+  border: 1px solid silver;
+  border-radius: 5px;
+  pointer-events: none;
+  background-position: center;
+  background-size: cover;
+  transition: all .1s linear;
+}
+
+.flat .keyboard-image {
+  height: 29px;
+  width: 29px;
+  box-shadow: 0px 3px 0.2px 0.2px rgba(255, 255, 255, 0.8);
+}
+
+.natural .keyboard-image {
+  box-shadow: 0px 3px 0.2px 0.2px rgba(0, 0, 0, .3);
+}
+
+#colon {
+  border: 1px solid #404040;
+  box-shadow: 0px 3px 0.2px 0.2px rgba(0, 0, 0, 0.8);
+}
+
+.keydown .keyboard-image {
+  box-shadow: 0px 0px 0px 0px rgba(0, 0, 0, 0.8);
+  transform: translateY(3px);
+}
+
+.keydown {
+  height: 101%;
+}
+
 
 /*  *//*  */
 /*  EFX   */
@@ -318,7 +359,7 @@ a {
   border: 1px solid rgba(255, 255, 255, 0.6);
   border-bottom: 1px solid black;
   color: rgb(255, 255, 255);
-  transition: all .1s linear;
+  transition: all .1s ease;
   text-align: center;
   cursor: pointer;
 }
@@ -389,6 +430,7 @@ progress[value]::-webkit-progress-bar {
 progress[value]::-webkit-progress-value {
   border-radius: 15px;
   background-color: #c030ff;
+  transition: all .1s linear;
 }
 
 .active {
@@ -439,23 +481,23 @@ progress[value]::-webkit-progress-value {
 }
 
 #triangle:hover {
-  background-color: rgb(48, 255, 251);
+  background-color: rgba(48, 255, 251, 1);
 }
 
 #square:hover {
-  background-color: rgb(255, 217, 48);
+  background-color: rgba(255, 217, 48, 1);
 }
 
 #sine:hover {
-  background-color: rgb(75, 255, 48);
+  background-color: rgba(75, 255, 48, 1);
 }
 
 #membrane:hover {
-  background-color: rgb(255, 106, 48);
+  background-color: rgba(255, 106, 48, 1);
 }
 
 #fm:hover {
-  background-color: rgb(192, 48, 255);
+  background-color: rgba(192, 48, 255, 1);
 }
 
 .extra-container {
