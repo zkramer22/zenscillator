@@ -78,9 +78,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //////////////////////
 
 const INSTRUMENTS = {
-  "synth"     : new __WEBPACK_IMPORTED_MODULE_0_tone___default.a.PolySynth(16, __WEBPACK_IMPORTED_MODULE_0_tone___default.a.Synth).toMaster(),
-  "membrane"  : new __WEBPACK_IMPORTED_MODULE_0_tone___default.a.PolySynth(2, __WEBPACK_IMPORTED_MODULE_0_tone___default.a.MembraneSynth).toMaster(),
-  "fm"        : new __WEBPACK_IMPORTED_MODULE_0_tone___default.a.PolySynth(2, __WEBPACK_IMPORTED_MODULE_0_tone___default.a.FMSynth).toMaster()
+  "synth"     : new __WEBPACK_IMPORTED_MODULE_0_tone___default.a.PolySynth(16, __WEBPACK_IMPORTED_MODULE_0_tone___default.a.Synth),//.toMaster(),
+  "membrane"  : new __WEBPACK_IMPORTED_MODULE_0_tone___default.a.PolySynth(2, __WEBPACK_IMPORTED_MODULE_0_tone___default.a.MembraneSynth),//.toMaster(),
+  "fm"        : new __WEBPACK_IMPORTED_MODULE_0_tone___default.a.PolySynth(2, __WEBPACK_IMPORTED_MODULE_0_tone___default.a.FMSynth)//.toMaster()
 };
 
 const KEYCODES = {
@@ -133,13 +133,28 @@ let octave = 4;
 //////////////////////
 
 let tremolo = new __WEBPACK_IMPORTED_MODULE_0_tone___default.a.Tremolo(
-  { frequency: "8n", type: "sine", depth: 0.5, spread: 0 }
-).toMaster().start();
-let autopan = new __WEBPACK_IMPORTED_MODULE_0_tone___default.a.AutoPanner("4n").toMaster().start();
-let splash = new __WEBPACK_IMPORTED_MODULE_0_tone___default.a.JCReverb(0.8).toMaster();
-let delay = new __WEBPACK_IMPORTED_MODULE_0_tone___default.a.PingPongDelay("4n", 0.2).toMaster();
-let reverb = new __WEBPACK_IMPORTED_MODULE_0_tone___default.a.Freeverb(0.88, 2000).toMaster();
-let vibrato = new __WEBPACK_IMPORTED_MODULE_0_tone___default.a.Vibrato(8, 0.2).toMaster();
+  { frequency: "8n", type: "sine", depth: 1, spread: 0, wet: 0 }
+).start();
+
+let autopan = new __WEBPACK_IMPORTED_MODULE_0_tone___default.a.AutoPanner(
+  { frequency: "4n", depth: 1, wet: 0 }
+).start();
+
+let splash = new __WEBPACK_IMPORTED_MODULE_0_tone___default.a.JCReverb(
+  { roomSize: 0.8, wet: 0 }
+);
+
+let delay = new __WEBPACK_IMPORTED_MODULE_0_tone___default.a.PingPongDelay(
+  { delayTime: "4n", feedback: 0.2, wet: 0 }
+);
+
+let reverb = new __WEBPACK_IMPORTED_MODULE_0_tone___default.a.Freeverb(
+  { roomSize: 0.88, dampening: 2000, wet: 0 }
+);
+
+let vibrato = new __WEBPACK_IMPORTED_MODULE_0_tone___default.a.Vibrato(
+  { frequency: 8, depth: 0.2, wet: 0 }
+);
 
 let efxPanel = false;
 
@@ -147,12 +162,12 @@ let efxPanel = false;
 // also add pitch bend! could be control and option
 
 const FXBANK = {
-  "tremolo": tremolo,
-  "autopan": autopan,
-  "splash": splash,
-  "delay": delay,
-  "reverb": reverb,
-  "vibrato": vibrato
+  "tremolo": [tremolo, 0.6],
+  "autopan": [autopan, 0.6],
+  "splash": [splash, 0.6],
+  "delay": [delay, 0.6],
+  "reverb": [reverb, 0.6],
+  "vibrato": [vibrato, 0.6],
 };
 
 const FXCODES = {
@@ -191,7 +206,7 @@ const ACTIVEFX = {
 
 const waveform = new __WEBPACK_IMPORTED_MODULE_0_tone___default.a.Analyser("waveform", 2048);
 waveform.smoothing = 1;
-instrument.connect(waveform);
+// instrument.connect(waveform);
 
 // ##### meter analyser ##### //
 // const meter = new Tone.Meter(0.8);
@@ -203,9 +218,14 @@ instrument.connect(waveform);
 // .toMaster();
 // mic.open();
 
-//////////////////////
-//////  canvas  //////
-//////////////////////
+const chainItUp = () => {
+  instrument.chain(
+    tremolo, vibrato,
+    autopan, splash, reverb, delay,
+    waveform,
+    __WEBPACK_IMPORTED_MODULE_0_tone___default.a.Master
+  );
+}
 
 //----------------------------//
 
@@ -268,6 +288,7 @@ const switchInst = () => {
     $currentInst.next().trigger('click');
   }
 };
+
 //////////////////////
 //// touch events ////
 //////////////////////
@@ -342,6 +363,8 @@ $(document).ready(() => {
   const $efxButtons = $('.efxButton');
   const $canvas = $('#canvas');
   const ctx = $canvas[0].getContext('2d');
+
+      chainItUp();
 
       $body.contextmenu(e => e.preventDefault());
 
@@ -463,21 +486,19 @@ $(document).ready(() => {
             break;
           case 'membrane':
             instrument = INSTRUMENTS["membrane"];
-            instrument.connect(waveform);
-            // instrument.connect(meter);
             instrument.volume.value = -3;
             toggleInst(type, 'redorange');
             octave = 1;
             break;
           case 'fm':
             instrument = INSTRUMENTS["fm"];
-            instrument.connect(waveform);
-            // instrument.connect(meter);
             instrument.volume.value = 0;
             toggleInst(type, 'purple');
             octave = 2;
             break;
         }
+
+        chainItUp();
 
       });
 
@@ -534,17 +555,17 @@ $(document).ready(() => {
 
       $efxButtons.click(e => {
         const effectName = e.target.id;
-        let effect = FXBANK[effectName];
+        let effect = FXBANK[effectName][0];
 
         if (!ACTIVEFX[effect]) {
-          instrument.connect(effect);
-          effect.connect(waveform);
-          // effect.connect(meter);
+          effect.wet.value = FXBANK[effectName][1];
+          $(`.${effectName}`)[0].value = FXBANK[effectName][1];
           ACTIVEFX[effect] = true;
           toggleOn(effectName);
         }
         else {
-          instrument.disconnect(effect);
+          effect.wet.value = 0;
+          $(`.${effectName}`)[0].value = 0;
           ACTIVEFX[effect] = false;
           toggleOn(effectName);
         }
@@ -554,9 +575,7 @@ $(document).ready(() => {
       document.addEventListener('keydown', e => {
         // e.preventDefault();
 
-        if (__WEBPACK_IMPORTED_MODULE_0_tone___default.a.context.state !== 'running') {
-          return;
-        }
+        if (__WEBPACK_IMPORTED_MODULE_0_tone___default.a.context.state !== 'running') { return }
 
         const key = e.keyCode;
 
@@ -609,26 +628,37 @@ $(document).ready(() => {
 
           switch (change) {
             case "toggle":
-              if (ACTIVEFX[effect]) {
-                instrument.disconnect(effect);
-                ACTIVEFX[effect] = false;
-                toggleOn(effectStr);
+              if (!ACTIVEFX[effect]) {
+                effect.wet.value = FXBANK[effectStr][1];
+                $(`.${effectStr}`)[0].value = FXBANK[effectStr][1];
+                ACTIVEFX[effect] = true;
               }
               else {
-                instrument.connect(effect);
-                effect.connect(waveform);
-                // effect.connect(meter);
-                ACTIVEFX[effect] = true;
-                toggleOn(effectStr);
+                effect.wet.value = 0;
+                $(`.${effectStr}`)[0].value = 0;
+                ACTIVEFX[effect] = false;
               }
+              toggleOn(effectStr);
               break;
             case "down":
-              effect.wet.value -= 0.1;
-              $(`.${effectStr}`)[0].value -= 0.2;
+              if (!ACTIVEFX[effect]) {
+                return;
+              }
+              else {
+                effect.wet.value -= 0.2;
+                $(`.${effectStr}`)[0].value -= 0.2;
+                FXBANK[effectStr][1] = effect.wet.value;
+              }
               break;
             case "up":
-              effect.wet.value += 0.1;
-              $(`.${effectStr}`)[0].value += 0.2;
+              if (!ACTIVEFX[effect]) {
+                return;
+              }
+              else {
+                effect.wet.value += 0.2;
+                $(`.${effectStr}`)[0].value += 0.2;
+                FXBANK[effectStr][1] = effect.wet.value;
+              }
               break;
           }
         }
