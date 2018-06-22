@@ -84,23 +84,23 @@ const INSTRUMENTS = {
 };
 
 const KEYCODES = {
-  90  : ['C', 'red', '#ff3030'],             // z
-  83  : ['Db', 'redorange', '#ff6a30'],      // s
-  88  : ['D', 'orange', '#ffaf30'],          // x
-  68  : ['Eb', 'orangeyellow', '#ffd930'],   // d
-  67  : ['E', 'yellow', '#fbff30'],          // c
-  86  : ['F', 'green', '#4bff30'],           // v
-  71  : ['Gb', 'teal', '#30ffb9'],           // g
-  66  : ['G', 'lightblue', '#30fffb'],       // b
-  72  : ['Ab', 'blue', '#30b9ff'],           // h
-  78  : ['A', 'bluepurple', '#3048ff'],      // n
-  74  : ['Bb', 'purple', '#c030ff'],         // j
-  77  : ['B', 'magenta', '#ff30af'],         // m
-  188 : ['eC', 'red', '#ff3030'],            // ,
-  76  : ['eDb', 'redorange', '#ff6a30'],     // l
-  190 : ['eD', 'orange', '#ffaf30'],         // .
-  186 : ['eEb', 'orangeyellow', '#ffd930'],  // ;
-  191 : ['eE', 'yellow', '#fbff30']          // /
+  'z'  : ['C', 'red', '#ff3030'],             // z
+  's'  : ['Db', 'redorange', '#ff6a30'],      // s
+  'x'  : ['D', 'orange', '#ffaf30'],          // x
+  'd'  : ['Eb', 'orangeyellow', '#ffd930'],   // d
+  'c'  : ['E', 'yellow', '#fbff30'],          // c
+  'v'  : ['F', 'green', '#4bff30'],           // v
+  'g'  : ['Gb', 'teal', '#30ffb9'],           // g
+  'b'  : ['G', 'lightblue', '#30fffb'],       // b
+  'h'  : ['Ab', 'blue', '#30b9ff'],           // h
+  'n'  : ['A', 'bluepurple', '#3048ff'],      // n
+  'j'  : ['Bb', 'purple', '#c030ff'],         // j
+  'm'  : ['B', 'magenta', '#ff30af'],         // m
+  ',' : ['eC', 'red', '#ff3030'],            // ,
+  'l'  : ['eDb', 'redorange', '#ff6a30'],     // l
+  '.' : ['eD', 'orange', '#ffaf30'],         // .
+  ';' : ['eEb', 'orangeyellow', '#ffd930'],  // ;
+  '/' : ['eE', 'yellow', '#fbff30']          // /
 };
 
 const MOUSECODES = {
@@ -121,6 +121,14 @@ const MOUSECODES = {
   'eD': ['orange', '#ffaf30'],         // .
   'eEb': ['orangeyellow', '#ffd930'],  // ;
   'eE': ['yellow', '#fbff30']          // /
+}
+
+const MODKEYS = {
+  91: false, // MAC: left-command, WIN: windows
+  93: false, // MAC: right-command, WIN: menu
+  18: false, // alt
+  16: false, // shift
+  17: false // control
 }
 
 let instrument = INSTRUMENTS["synth"];
@@ -171,24 +179,22 @@ const FXBANK = {
 };
 
 const FXCODES = {
-  49  : [tremolo, "down", "tremolo"],   // 1
-  50  : [tremolo, "up", "tremolo"],     // 2
-  81  : [tremolo, "toggle", "tremolo"], // q
-  51  : [autopan, "down", "autopan"],   // 3
-  52  : [autopan, "up", "autopan"],     // 4
-  69  : [autopan, "toggle", "autopan"], // e
-  53  : [splash, "down", "splash"],     // 5
-  54  : [splash, "up", "splash"],       // 6
-  84  : [splash, "toggle", "splash"],   // t
-  55  : [delay, "down", "delay"],       // 7
-  56  : [delay, "up", "delay"],         // 8
-  85  : [delay, "toggle", "delay"],     // u
-  57  : [reverb, "down", "reverb"],     // 9
-  48  : [reverb, "up", "reverb"],       // 0
-  79  : [reverb, "toggle", "reverb"],   // o
-  192 : [vibrato, "toggle", "vibrato"], // ~
-  // 189 : [octave, "toggle", "octave"],   // -
-  // 187 : [octave, "toggle", "octave"]    // +
+  '1'  : [tremolo, "down", "tremolo"],
+  '2'  : [tremolo, "up", "tremolo"],
+  'q'  : [tremolo, "toggle", "tremolo"],
+  '3'  : [autopan, "down", "autopan"],
+  '4'  : [autopan, "up", "autopan"],
+  'e'  : [autopan, "toggle", "autopan"],
+  '5'  : [splash, "down", "splash"],
+  '6'  : [splash, "up", "splash"],
+  't'  : [splash, "toggle", "splash"],
+  '7'  : [delay, "down", "delay"],
+  '8'  : [delay, "up", "delay"],
+  'u'  : [delay, "toggle", "delay"],
+  '9'  : [reverb, "down", "reverb"],
+  '0'  : [reverb, "up", "reverb"],
+  'o'  : [reverb, "toggle", "reverb"],
+  // '`' : [vibrato, "toggle", "vibrato"]
 };
 
 const ACTIVEFX = {
@@ -356,6 +362,9 @@ $(document).ready(() => {
   const $instruments = $('.instrument');
   const $mute = $('#mute');
   const $help = $('#ok-button, #help');
+  const $vibrato = $('#vibrato');
+  const $vibratoKey = $('.vibrato');
+  const $octave = $('#octave');
   const $octaveUp = $('#octaveUp');
   const $octaveDown = $('#octaveDown');
   const $efxPane = $('#efxPane');
@@ -530,20 +539,42 @@ $(document).ready(() => {
 
       $octaveUp.click(e => {
         if (octave < 6) {
-          const $octave = $('#octave');
           octave++;
-          $octave.toggleClass('active')
-          setTimeout(() => { $octave.toggleClass('active') }, 120);
+          $octave.toggleClass('active');
+          $octaveUp.toggleClass('keydown');
+          setTimeout(() => {
+            $octave.toggleClass('active');
+            $octaveUp.toggleClass('keydown');
+          }, 120);
         }
       });
 
       $octaveDown.click(e => {
         if (octave > 1) {
-          const $octave = $('#octave');
           octave--;
-          $octave.toggleClass('active')
-          setTimeout(() => { $octave.toggleClass('active') }, 120);
+          $octave.toggleClass('active');
+          $octaveDown.toggleClass('keydown');
+          setTimeout(() => {
+            $octave.toggleClass('active');
+            $octaveDown.toggleClass('keydown');
+          }, 120);
         }
+      });
+
+      $vibratoKey.click(e => {
+        if (!ACTIVEFX[vibrato]) {
+          vibrato.wet.value = FXBANK["vibrato"][1];
+          ACTIVEFX[vibrato] = true;
+        }
+        else {
+          vibrato.wet.value = 0;
+          ACTIVEFX[vibrato] = false;
+        }
+        $vibrato.toggleClass('active');
+        $vibratoKey.toggleClass('keydown');
+        setTimeout(() => {
+          $vibratoKey.toggleClass('keydown');
+        }, 120);
       });
 
       $efxPane.click(e => {
@@ -573,20 +604,25 @@ $(document).ready(() => {
 
       // keyboard to play notes. Keyup event inside
       document.addEventListener('keydown', e => {
-        // e.preventDefault();
-
         if (__WEBPACK_IMPORTED_MODULE_0_tone___default.a.context.state !== 'running') { return }
 
-        const key = e.keyCode;
+        const keyDown = e.key;
 
-        if (KEYCODES.hasOwnProperty(key)) {
+        if (MODKEYS.hasOwnProperty(keyDown)) {
+          MODKEYS[keyDown] = true;
+        }
 
-            if (e.repeat) { return null }
+        if (KEYCODES.hasOwnProperty(keyDown)) {
 
+            if (e.repeat) { return }
+
+            if (MODKEYS[91]) {
+              console.log('left control down!');
+            }
             // turn on note //
-            const note = KEYCODES[key][0];
-            const color = KEYCODES[key][1];
-            const hex = KEYCODES[key][2];
+            const note = KEYCODES[keyDown][0];
+            const color = KEYCODES[keyDown][1];
+            const hex = KEYCODES[keyDown][2];
 
             window.hexOn = hex;
 
@@ -619,12 +655,12 @@ $(document).ready(() => {
               window.drawer = window.setInterval(drawLoop, 10);
             }
         }
-        else if (FXCODES.hasOwnProperty(key)) {
-          let effect = FXCODES[key][0];
-          let change = FXCODES[key][1];
-          let effectStr = FXCODES[key][2];
+        else if (FXCODES.hasOwnProperty(keyDown)) {
+          let effect = FXCODES[keyDown][0];
+          let change = FXCODES[keyDown][1];
+          let effectStr = FXCODES[keyDown][2];
 
-          if ((e.repeat) && (change === "toggle")) { return null }
+          if ((e.repeat) && (change === "toggle")) { return }
 
           switch (change) {
             case "toggle":
@@ -662,15 +698,6 @@ $(document).ready(() => {
               break;
           }
         }
-        else if (e.keyCode === 189 && octave > 1) {
-          octave--;
-          toggleOn('octave');
-        }
-        else if (e.keyCode === 187 && octave < 6) {
-          octave++;
-          toggleOn('octave');
-        }
-        // change octaves on '+' and '-' keys //
 
       });
 
@@ -678,7 +705,15 @@ $(document).ready(() => {
         if (__WEBPACK_IMPORTED_MODULE_0_tone___default.a.context.state !== 'running') {
           return;
         }
-        const keyUp = e.keyCode;
+        const keyUp = e.key;
+
+        if (MODKEYS.hasOwnProperty(keyUp)) {
+          MODKEYS[keyUp] = false;
+        }
+
+        if (MODKEYS[91]) {
+          console.log('left control down!');
+        }
 
         if (KEYCODES.hasOwnProperty(keyUp)) {
           const noteUp = KEYCODES[keyUp][0];
@@ -700,40 +735,55 @@ $(document).ready(() => {
               clearInterval(window.drawer);
             }, 2500);
         }
-        else if (FXCODES.hasOwnProperty(keyUp)) {
-          let effect = FXCODES[keyUp][0];
-          let change = FXCODES[keyUp][1];
-          let effectStr = FXCODES[keyUp][2];
-
-          if (effectStr === 'vibrato') {
-            instrument.disconnect(effect);
-            ACTIVEFX[effect] = false;
-            toggleOn(effectStr);
-          }
-        }
-        else if (e.keyCode === 189) {
-          if (octave > 1) {
-            toggleOn('octave');
-          }
-          else if (octave === 1) {
-            $('#octave').removeClass('active');
-          }
-        }
-        else if (e.keyCode === 187) {
-          if (octave < 6) {
-            toggleOn('octave');
-          }
-          else if (octave === 6) {
-            $('#octave').removeClass('active');
-          }
-        }
 
       });
 
       document.addEventListener('keypress', e => {
-        if (e.keyCode === 32) {
-          e.preventDefault();
-          switchInst();
+        const keyPress = e.key;
+        switch (keyPress) {
+          case ' ':
+            e.preventDefault();
+            switchInst();
+            break;
+          case '=':
+            if (octave < 6) {
+              octave++;
+              $octave.toggleClass('active');
+              $octaveUp.toggleClass('keydown');
+              setTimeout(() => {
+                $octave.toggleClass('active');
+                $octaveUp.toggleClass('keydown');
+              }, 120);
+            }
+            break;
+          case '-':
+            if (octave > 1) {
+              octave--;
+              $octave.toggleClass('active');
+              $octaveDown.toggleClass('keydown');
+              setTimeout(() => {
+                $octave.toggleClass('active');
+                $octaveDown.toggleClass('keydown');
+              }, 120);
+            }
+            break;
+          case '`':
+            if (!ACTIVEFX[vibrato]) {
+              vibrato.wet.value = FXBANK["vibrato"][1];
+              ACTIVEFX[vibrato] = true;
+            }
+            else {
+              vibrato.wet.value = 0;
+              ACTIVEFX[vibrato] = false;
+            }
+            $vibrato.toggleClass('active');
+            $vibratoKey.toggleClass('keydown');
+            setTimeout(() => {
+              $vibratoKey.toggleClass('keydown');
+            }, 120);
+            break;
+          default:
+            return;
         }
       });
 });
