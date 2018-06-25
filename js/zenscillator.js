@@ -299,7 +299,7 @@ $(document).ready(() => {
   const $efxButtons = $('.efxButton');
   const $canvas = $('#canvas');
   const ctx = $canvas[0].getContext('2d');
-
+  
       chainItUp();
 
       $body.contextmenu(e => e.preventDefault());
