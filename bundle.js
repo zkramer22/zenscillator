@@ -698,7 +698,12 @@ $(document).ready(() => {
               break;
           }
         }
+        else if (keyDown === 'Control') {
+          const val = efxPanel ? '-205px' : '0px';
+          efxPanel = !efxPanel;
 
+          $efxContainer.animate({ bottom: `${val}`}, 350);
+        }
       });
 
       document.addEventListener('keyup', e => {

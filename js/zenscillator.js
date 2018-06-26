@@ -299,7 +299,7 @@ $(document).ready(() => {
   const $efxButtons = $('.efxButton');
   const $canvas = $('#canvas');
   const ctx = $canvas[0].getContext('2d');
-  
+
       chainItUp();
 
       $body.contextmenu(e => e.preventDefault());
@@ -625,7 +625,12 @@ $(document).ready(() => {
               break;
           }
         }
+        else if (keyDown === 'Control') {
+          const val = efxPanel ? '-205px' : '0px';
+          efxPanel = !efxPanel;
 
+          $efxContainer.animate({ bottom: `${val}`}, 350);
+        }
       });
 
       document.addEventListener('keyup', e => {
