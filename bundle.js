@@ -96,12 +96,32 @@ const KEYCODES = {
   'n'  : ['A', 'bluepurple', '#3048ff'],      // n
   'j'  : ['Bb', 'purple', '#c030ff'],         // j
   'm'  : ['B', 'magenta', '#ff30af'],         // m
-  ',' : ['eC', 'red', '#ff3030'],            // ,
+  ','  : ['eC', 'red', '#ff3030'],            // ,
   'l'  : ['eDb', 'redorange', '#ff6a30'],     // l
-  '.' : ['eD', 'orange', '#ffaf30'],         // .
-  ';' : ['eEb', 'orangeyellow', '#ffd930'],  // ;
-  '/' : ['eE', 'yellow', '#fbff30']          // /
+  '.'  : ['eD', 'orange', '#ffaf30'],         // .
+  ';'  : ['eEb', 'orangeyellow', '#ffd930'],  // ;
+  '/'  : ['eE', 'yellow', '#fbff30']          // /
 };
+
+const KEYSTATES = {
+  'z'  : false,
+  's'  : false,
+  'x'  : false,
+  'd'  : false,
+  'c'  : false,
+  'v'  : false,
+  'g'  : false,
+  'b'  : false,
+  'h'  : false,
+  'n'  : false,
+  'j'  : false,
+  'm'  : false,
+  ','  : false,
+  'l'  : false,
+  '.'  : false,
+  ';'  : false,
+  '/'  : false
+}
 
 const MOUSECODES = {
   'C': ['red', '#ff3030'],             // z
@@ -124,11 +144,9 @@ const MOUSECODES = {
 }
 
 const MODKEYS = {
-  91: false, // MAC: left-command, WIN: windows
-  93: false, // MAC: right-command, WIN: menu
-  18: false, // alt
-  16: false, // shift
-  17: false // control
+  'Meta': false, // MAC: command, WIN: windows
+  'Alt': false,
+  'Shift': false
 }
 
 let instrument = INSTRUMENTS["synth"];
@@ -300,7 +318,7 @@ const switchInst = () => {
 //////////////////////
 //
 document.addEventListener('touchstart', (e) => {
-  e.preventDefault();
+  // e.preventDefault();
 
   if (e.target.className === 'natural' || e.target.className === 'flat') {
     const note = e.target.id;
@@ -352,9 +370,9 @@ document.addEventListener('touchend', (e) => {
   }
 });
 
-//////////////////////
-//// mouse events ////
-//////////////////////
+///////////////////////
+/// event listeners ///
+///////////////////////
 
 $(document).ready(() => {
   const $keys = $('.naturals-group, .flats-group');
@@ -602,23 +620,27 @@ $(document).ready(() => {
         }
       });
 
-      // keyboard to play notes. Keyup event inside
+      // press keyboard keys to play notes.
       document.addEventListener('keydown', e => {
         if (__WEBPACK_IMPORTED_MODULE_0_tone___default.a.context.state !== 'running') { return }
+
+        if (e.metaKey) {
+          e.preventDefault();
+        }
 
         const keyDown = e.key;
 
         if (MODKEYS.hasOwnProperty(keyDown)) {
           MODKEYS[keyDown] = true;
+          console.log(MODKEYS);
         }
 
         if (KEYCODES.hasOwnProperty(keyDown)) {
-
             if (e.repeat) { return }
 
-            if (MODKEYS[91]) {
-              console.log('left control down!');
-            }
+            KEYSTATES[keyDown] = true;
+            console.log(KEYSTATES);
+
             // turn on note //
             const note = KEYCODES[keyDown][0];
             const color = KEYCODES[keyDown][1];
@@ -710,17 +732,25 @@ $(document).ready(() => {
         if (__WEBPACK_IMPORTED_MODULE_0_tone___default.a.context.state !== 'running') {
           return;
         }
+
         const keyUp = e.key;
+
+        if (MODKEYS['Meta']) {
+          console.log('metakey released');
+          for (let i = 0, vals = Object.values(KEYSTATES); i < 17; i++) {
+            console.log(vals[i]);
+          }
+        }
 
         if (MODKEYS.hasOwnProperty(keyUp)) {
           MODKEYS[keyUp] = false;
-        }
-
-        if (MODKEYS[91]) {
-          console.log('left control down!');
+          console.log(MODKEYS);
         }
 
         if (KEYCODES.hasOwnProperty(keyUp)) {
+          KEYSTATES[keyUp] = false;
+          console.log(KEYSTATES);
+
           const noteUp = KEYCODES[keyUp][0];
           const colorUp = KEYCODES[keyUp][1];
 
@@ -737,12 +767,15 @@ $(document).ready(() => {
             if (window.timeout) { clearTimeout(window.timeout) }
 
             window.timeout = setTimeout(() => {
-              clearInterval(window.drawer);
-            }, 2500);
+              if (Object.values(KEYSTATES).every(el => { return el === false })) {
+                clearInterval(window.drawer);
+              }
+            }, 4500);
         }
 
       });
 
+      // extra keys: change instrument, octave switch, vibrato toggle
       document.addEventListener('keypress', e => {
         const keyPress = e.key;
         switch (keyPress) {
