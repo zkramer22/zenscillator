@@ -559,14 +559,12 @@ $(document).ready(() => {
 
         if (MODKEYS.hasOwnProperty(keyDown)) {
           MODKEYS[keyDown] = true;
-          console.log(MODKEYS);
         }
 
         if (KEYCODES.hasOwnProperty(keyDown)) {
             if (e.repeat) { return }
 
             KEYSTATES[keyDown] = true;
-            console.log(KEYSTATES);
 
             // turn on note //
             const note = KEYCODES[keyDown][0];
@@ -647,7 +645,7 @@ $(document).ready(() => {
               break;
           }
         }
-        else if (keyDown === 'Control') {
+        else if (keyDown === 'Control') { // show & hide efx panel
           const val = efxPanel ? '-205px' : '0px';
           efxPanel = !efxPanel;
 
@@ -663,20 +661,20 @@ $(document).ready(() => {
         const keyUp = e.key;
 
         if (MODKEYS['Meta']) {
-          console.log('metakey released');
-          for (let i = 0, vals = Object.values(KEYSTATES); i < 17; i++) {
-            console.log(vals[i]);
-          }
+          MODKEYS['Meta'] = false;
+          Object.keys(KEYSTATES).forEach(el => {
+            if (KEYSTATES[el]) {
+              document.dispatchEvent(new KeyboardEvent('keyup',{ 'key': el }));
+            }
+          });
         }
 
         if (MODKEYS.hasOwnProperty(keyUp)) {
           MODKEYS[keyUp] = false;
-          console.log(MODKEYS);
         }
 
         if (KEYCODES.hasOwnProperty(keyUp)) {
           KEYSTATES[keyUp] = false;
-          console.log(KEYSTATES);
 
           const noteUp = KEYCODES[keyUp][0];
           const colorUp = KEYCODES[keyUp][1];
