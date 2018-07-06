@@ -73,7 +73,8 @@ const MOUSECODES = {
 const MODKEYS = {
   'Meta': false, // MAC: command, WIN: windows
   'Alt': false,
-  'Shift': false
+  'Shift': false,
+  ' ': false
 }
 
 let instrument = INSTRUMENTS["synth"];
@@ -108,6 +109,10 @@ let reverb = new Tone.Freeverb(
 let vibrato = new Tone.Vibrato(
   { frequency: 8, depth: 0.2, wet: 0 }
 );
+
+let compressor = new Tone.Compressor(-24, 30);
+
+let limiter = new Tone.Limiter(-15);
 
 let efxPanel = false;
 
@@ -173,6 +178,8 @@ const chainItUp = () => {
   instrument.chain(
     tremolo, vibrato,
     autopan, splash, reverb, delay,
+    compressor,
+    limiter,
     waveform,
     Tone.Master
   );
@@ -210,6 +217,7 @@ const drawLoop = () => {
     ctx.lineTo(x, y);
   }
   ctx.stroke();
+  console.log('hi');
 }
 
 //////////////////////
@@ -552,7 +560,8 @@ $(document).ready(() => {
         if (Tone.context.state !== 'running') { return }
 
         if (e.metaKey) {
-          e.preventDefault();
+          MODKEYS['Meta'] = true;
+          return;
         }
 
         const keyDown = e.key;
@@ -564,12 +573,18 @@ $(document).ready(() => {
         if (KEYCODES.hasOwnProperty(keyDown)) {
             if (e.repeat) { return }
 
-            KEYSTATES[keyDown] = true;
-
             // turn on note //
             const note = KEYCODES[keyDown][0];
             const color = KEYCODES[keyDown][1];
             const hex = KEYCODES[keyDown][2];
+
+            if (MODKEYS[' '] && KEYSTATES[keyDown]) {
+              setTimeout(() => {
+                sustainClassToggle(`${note}`, `${color}`);
+              }, 30)
+            }
+
+            KEYSTATES[keyDown] = true;
 
             window.hexOn = hex;
 
@@ -667,6 +682,7 @@ $(document).ready(() => {
               document.dispatchEvent(new KeyboardEvent('keyup',{ 'key': el }));
             }
           });
+          return;
         }
 
         if (MODKEYS.hasOwnProperty(keyUp)) {
@@ -674,6 +690,10 @@ $(document).ready(() => {
         }
 
         if (KEYCODES.hasOwnProperty(keyUp)) {
+          if (MODKEYS[' ']) {
+            return;
+          }
+
           KEYSTATES[keyUp] = false;
 
           const noteUp = KEYCODES[keyUp][0];
@@ -695,7 +715,15 @@ $(document).ready(() => {
               if (Object.values(KEYSTATES).every(el => { return el === false })) {
                 clearInterval(window.drawer);
               }
-            }, 4500);
+            }, 3750);
+        }
+        else if (keyUp === ' ') {
+          MODKEYS[' '] = false;
+          Object.keys(KEYSTATES).forEach(el => {
+            if (KEYSTATES[el]) {
+              document.dispatchEvent(new KeyboardEvent('keyup',{ 'key': el }));
+            }
+          });
         }
 
       });
@@ -704,10 +732,10 @@ $(document).ready(() => {
       document.addEventListener('keypress', e => {
         const keyPress = e.key;
         switch (keyPress) {
-          case ' ':
-            e.preventDefault();
-            switchInst();
-            break;
+          // case ' ':
+          //   e.preventDefault();
+          //   switchInst();
+          //   break;
           case '=':
             if (octave < 6) {
               octave++;
