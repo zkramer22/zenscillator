@@ -349,11 +349,11 @@ const drawerOn = () => {
   if (window.timeout) { clearTimeout(window.timeout) }
 
   if (!window.drawer) {
-    window.drawer = window.setInterval(drawLoop, 10);
+    window.drawer = window.setInterval(drawLoop, 1);
   }
   else {
     clearInterval(window.drawer);
-    window.drawer = window.setInterval(drawLoop, 10);
+    window.drawer = window.setInterval(drawLoop, 1);
   }
 };
 
