@@ -11,23 +11,23 @@ const INSTRUMENTS = {
 };
 
 const KEYCODES = {
-  'z'  : ['C', 'red', '#ff3030'],             // z
-  's'  : ['Db', 'redorange', '#ff6a30'],      // s
-  'x'  : ['D', 'orange', '#ffaf30'],          // x
-  'd'  : ['Eb', 'orangeyellow', '#ffd930'],   // d
-  'c'  : ['E', 'yellow', '#fbff30'],          // c
-  'v'  : ['F', 'green', '#4bff30'],           // v
-  'g'  : ['Gb', 'teal', '#30ffb9'],           // g
-  'b'  : ['G', 'lightblue', '#30fffb'],       // b
-  'h'  : ['Ab', 'blue', '#30b9ff'],           // h
-  'n'  : ['A', 'bluepurple', '#3048ff'],      // n
-  'j'  : ['Bb', 'purple', '#c030ff'],         // j
-  'm'  : ['B', 'magenta', '#ff30af'],         // m
-  ','  : ['eC', 'red', '#ff3030'],            // ,
-  'l'  : ['eDb', 'redorange', '#ff6a30'],     // l
-  '.'  : ['eD', 'orange', '#ffaf30'],         // .
-  ';'  : ['eEb', 'orangeyellow', '#ffd930'],  // ;
-  '/'  : ['eE', 'yellow', '#fbff30']          // /
+  'z'  : ['C', 'red', '#ff3030'],
+  's'  : ['Db', 'redorange', '#ff6a30'],
+  'x'  : ['D', 'orange', '#ffaf30'],
+  'd'  : ['Eb', 'orangeyellow', '#ffd930'],
+  'c'  : ['E', 'yellow', '#fbff30'],
+  'v'  : ['F', 'green', '#4bff30'],
+  'g'  : ['Gb', 'teal', '#30ffb9'],
+  'b'  : ['G', 'lightblue', '#30fffb'],
+  'h'  : ['Ab', 'blue', '#30b9ff'],
+  'n'  : ['A', 'bluepurple', '#3048ff'],
+  'j'  : ['Bb', 'purple', '#c030ff'],
+  'm'  : ['B', 'magenta', '#ff30af'],
+  ','  : ['eC', 'red', '#ff3030'],
+  'l'  : ['eDb', 'redorange', '#ff6a30'],
+  '.'  : ['eD', 'orange', '#ffaf30'],
+  ';'  : ['eEb', 'orangeyellow', '#ffd930'],
+  '/'  : ['eE', 'yellow', '#fbff30']
 };
 
 const KEYSTATES = {
@@ -51,23 +51,23 @@ const KEYSTATES = {
 }
 
 const MOUSECODES = {
-  'C': ['red', '#ff3030'],             // z
-  'Db': ['redorange', '#ff6a30'],      // s
-  'D': ['orange', '#ffaf30'],          // x
-  'Eb': ['orangeyellow', '#ffd930'],   // d
-  'E': ['yellow', '#fbff30'],          // c
-  'F': ['green', '#4bff30'],           // v
-  'Gb': ['teal', '#30ffb9'],           // g
-  'G': ['lightblue', '#30fffb'],       // b
-  'Ab': ['blue', '#30b9ff'],           // h
-  'A': ['bluepurple', '#3048ff'],      // n
-  'Bb': ['purple', '#c030ff'],         // j
-  'B': ['magenta', '#ff30af'],         // m
-  'eC': ['red', '#ff3030'],            // ,
-  'eDb': ['redorange', '#ff6a30'],     // l
-  'eD': ['orange', '#ffaf30'],         // .
-  'eEb': ['orangeyellow', '#ffd930'],  // ;
-  'eE': ['yellow', '#fbff30']          // /
+  'C': ['red', '#ff3030'],
+  'Db': ['redorange', '#ff6a30'],
+  'D': ['orange', '#ffaf30'],
+  'Eb': ['orangeyellow', '#ffd930'],
+  'E': ['yellow', '#fbff30'],
+  'F': ['green', '#4bff30'],
+  'Gb': ['teal', '#30ffb9'],
+  'G': ['lightblue', '#30fffb'],
+  'Ab': ['blue', '#30b9ff'],
+  'A': ['bluepurple', '#3048ff'],
+  'Bb': ['purple', '#c030ff'],
+  'B': ['magenta', '#ff30af'],
+  'eC': ['red', '#ff3030'],
+  'eDb': ['redorange', '#ff6a30'],
+  'eD': ['orange', '#ffaf30'],
+  'eEb': ['orangeyellow', '#ffd930'],
+  'eE': ['yellow', '#fbff30']
 }
 
 const MODKEYS = {
@@ -108,7 +108,7 @@ let compressor = new Tone.Compressor(-24, 20);
 let limiter = new Tone.Limiter(-15);
 let efxPanel = false;
 
-// TODO:  add pitch bend! could be arrow keys
+// TODO:  add pitch bend! could be up and down arrow keys
 
 const FXBANK = {
   "tremolo": [tremolo, 0.6],
@@ -168,7 +168,6 @@ waveform.smoothing = 1;
 ///////////////////////////////////////////////////////////////////
 // connect instrument to effects, analysers, and master output. ///
 ///////////////////////////////////////////////////////////////////
-
 const chainItUp = () => {
   instrument.chain(
     tremolo, vibrato,
@@ -179,12 +178,10 @@ const chainItUp = () => {
   );
 }
 
-//----------------------------//
 /////////////////////////////////////////////////////
 // main drawing function, takes waveform analyser ///
 ////  data and draws strokes on canvas element //////
 /////////////////////////////////////////////////////
-
 const drawLoop = () => {
   const canvas = document.getElementById("canvas");
   const ctx = canvas.getContext("2d");
@@ -315,10 +312,74 @@ const efxPaneToggle = $efxContainer => {
 
   $efxContainer.animate({ bottom: `${val}`}, 350);
 };
+
+const gradientHandler = hex => {
+  window.hexOn = hex;
+
+  if (window.gradient) {
+    if (window.gradient.length === 4) {
+      window.gradient.pop();
+    }
+    window.gradient.unshift(hexOn);
+  }
+  else {
+    window.gradient = [hexOn];
+  }
+};
+
+const noteOn = note => {
+  if (note[0] !== "e") {
+    instrument.triggerAttack(`${note}${octave}`);
+  }
+  else {
+    instrument.triggerAttack(`${note.slice(1)}${octave + 1}`);
+  }
+};
+
+const noteOff = noteUp => {
+  if (noteUp[0] !== 'e') {
+    instrument.triggerRelease(`${noteUp}${octave}`);
+  }
+  else {
+    instrument.triggerRelease(`${noteUp.slice(1)}${octave + 1}`);
+  }
+};
+
+const drawerOn = () => {
+  if (window.timeout) { clearTimeout(window.timeout) }
+
+  if (!window.drawer) {
+    window.drawer = window.setInterval(drawLoop, 10);
+  }
+  else {
+    clearInterval(window.drawer);
+    window.drawer = window.setInterval(drawLoop, 10);
+  }
+};
+
+const drawerOff = modifier => {
+  if (window.timeout) { clearTimeout(window.timeout) }
+
+  if (modifier) {
+    if (Object.values(KEYSTATES).every(el => { return el === false })) {
+      window.timeout = setTimeout(() => {
+          clearInterval(window.drawer);
+      }, 3750);
+    }
+  }
+  else {
+    window.timeout = setTimeout(() => {
+      clearInterval(window.drawer);
+    }, 3750);
+  }
+};
+
+
 //////////////////////
 //// touch events ////
 //////////////////////
 //
+// TODO: fix these, use helper functions like in mouse and keyboard events. Check how it interacts with jQuery.
 document.addEventListener('touchstart', (e) => {
   // e.preventDefault();
 
@@ -406,41 +467,15 @@ $(document).ready(() => {
       $keys.mousedown(e => {
         e.preventDefault();
 
-        let note = e.target.id;
-        let color = MOUSECODES[note][0];
-        let hex = MOUSECODES[note][1];
+        const note = e.target.id;
+        const color = MOUSECODES[note][0];
+        const hex = MOUSECODES[note][1];
         const $target = $(e.target);
 
-        window.hexOn = hex;
-
-        if (window.gradient) {
-          if (window.gradient.length === 4) {
-            window.gradient.pop();
-          }
-          window.gradient.unshift(hexOn);
-        }
-        else {
-          window.gradient = [hexOn];
-        }
-
-        if (note[0] !== "e") {
-          instrument.triggerAttack(`${note}${octave}`);
-        }
-        else {
-          instrument.triggerAttack(`${note.slice(1)}${octave + 1}`);
-        }
-
+        gradientHandler(hex);
+        noteOn(note);
         sustainClassToggle(`${note}`, `${color}`);
-
-        if (window.timeout) { clearTimeout(window.timeout) }
-
-        if (!window.drawer) {
-          window.drawer = window.setInterval(drawLoop, 10);
-        }
-        else {
-          clearInterval(window.drawer);
-          window.drawer = window.setInterval(drawLoop, 10);
-        }
+        drawerOn();
 
         $keys.mouseup(eKeyup => {
 
@@ -449,21 +484,9 @@ $(document).ready(() => {
           const noteUp = eKeyup.target.id;
           const colorUp = MOUSECODES[noteUp][0];
 
-          // turn off note //
-          if (noteUp[0] !== 'e') {
-            instrument.triggerRelease(`${noteUp}${octave}`);
-          }
-          else {
-            instrument.triggerRelease(`${noteUp.slice(1)}${octave + 1}`);
-          }
-
+          noteOff(noteUp);
           sustainClassToggle(`${noteUp}`, `${colorUp}`);
-
-          if (window.timeout) { clearTimeout(window.timeout) }
-
-          window.timeout = setTimeout(() => {
-            clearInterval(window.drawer);
-          }, 2500);
+          drawerOff();
 
           $keys.off('mousemove mouseup');
           $body.off('mouseup');
@@ -604,9 +627,7 @@ $(document).ready(() => {
 
         const keyDown = e.key;
 
-        if (MODKEYS.hasOwnProperty(keyDown)) {
-          MODKEYS[keyDown] = true;
-        }
+        if (MODKEYS.hasOwnProperty(keyDown)) { MODKEYS[keyDown] = true; }
 
         if (KEYCODES.hasOwnProperty(keyDown)) {
             if (e.repeat) { return }
@@ -624,36 +645,10 @@ $(document).ready(() => {
 
             KEYSTATES[keyDown] = true;
 
-            window.hexOn = hex;
-
-            if (window.gradient) {
-              if (window.gradient.length === 4) {
-                window.gradient.pop();
-              }
-              window.gradient.unshift(hexOn);
-            }
-            else {
-              window.gradient = [hexOn];
-            }
-
-            if (note[0] !== "e") {
-              instrument.triggerAttack(`${note}${octave}`);
-            }
-            else {
-              instrument.triggerAttack(`${note.slice(1)}${octave + 1}`);
-            }
-
+            gradientHandler(hex);
+            noteOn(note);
             sustainClassToggle(`${note}`, `${color}`);
-
-            if (window.timeout) { clearTimeout(window.timeout) }
-
-            if (!window.drawer) {
-              window.drawer = window.setInterval(drawLoop, 10);
-            }
-            else {
-              clearInterval(window.drawer);
-              window.drawer = window.setInterval(drawLoop, 10);
-            }
+            drawerOn();
         }
         else if (FXCODES.hasOwnProperty(keyDown)) {
           let effect = FXCODES[keyDown][0];
@@ -694,9 +689,7 @@ $(document).ready(() => {
       });
 
       document.addEventListener('keyup', e => {
-        if (Tone.context.state !== 'running') {
-          return;
-        }
+        if (Tone.context.state !== 'running') { return }
 
         const keyUp = e.key;
 
@@ -709,40 +702,20 @@ $(document).ready(() => {
           });
           return;
         }
-
-        if (KEYCODES.hasOwnProperty(keyUp)) {
-          if (MODKEYS[' ']) {
-            return;
-          }
+        else if (KEYCODES.hasOwnProperty(keyUp)) {
+          if (MODKEYS[' ']) { return }
 
           KEYSTATES[keyUp] = false;
 
           const noteUp = KEYCODES[keyUp][0];
           const colorUp = KEYCODES[keyUp][1];
-
           const $note = $(`#${noteUp}`);
 
-          if (!$note.hasClass('keydown')) {
-            return;
-          }
+          if (!$note.hasClass('keydown')) { return }
 
-            // turn off noteUp //
-            if (noteUp[0] !== 'e') {
-              instrument.triggerRelease(`${noteUp}${octave}`);
-            }
-            else {
-              instrument.triggerRelease(`${noteUp.slice(1)}${octave + 1}`);
-            }
-
-            sustainClassToggle(`${noteUp}`, `${colorUp}`);
-
-            if (window.timeout) { clearTimeout(window.timeout) }
-
-            window.timeout = setTimeout(() => {
-              if (Object.values(KEYSTATES).every(el => { return el === false })) {
-                clearInterval(window.drawer);
-              }
-            }, 3750);
+          noteOff(noteUp);
+          sustainClassToggle(`${noteUp}`, `${colorUp}`);
+          drawerOff(1);
         }
         else if (keyUp === ' ') {
           if (Object.values(KEYSTATES).some(el => { return el === true })) {
@@ -752,6 +725,9 @@ $(document).ready(() => {
                 document.dispatchEvent(new KeyboardEvent('keyup',{ 'key': el }));
               }
             });
+          }
+          else {
+            MODKEYS[' '] = false;
           }
         }
 
