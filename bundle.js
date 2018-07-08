@@ -162,35 +162,26 @@ let octave = 4;
 let tremolo = new __WEBPACK_IMPORTED_MODULE_0_tone___default.a.Tremolo(
   { frequency: "8n", type: "sine", depth: 1, spread: 0, wet: 0 }
 ).start();
-
 let autopan = new __WEBPACK_IMPORTED_MODULE_0_tone___default.a.AutoPanner(
   { frequency: "4n", depth: 1, wet: 0 }
 ).start();
-
 let splash = new __WEBPACK_IMPORTED_MODULE_0_tone___default.a.JCReverb(
   { roomSize: 0.8, wet: 0 }
 );
-
 let delay = new __WEBPACK_IMPORTED_MODULE_0_tone___default.a.PingPongDelay(
   { delayTime: "4n", feedback: 0.2, wet: 0 }
 );
-
 let reverb = new __WEBPACK_IMPORTED_MODULE_0_tone___default.a.Freeverb(
   { roomSize: 0.88, dampening: 2000, wet: 0 }
 );
-
 let vibrato = new __WEBPACK_IMPORTED_MODULE_0_tone___default.a.Vibrato(
   { frequency: 8, depth: 0.2, wet: 0 }
 );
-
 let compressor = new __WEBPACK_IMPORTED_MODULE_0_tone___default.a.Compressor(-24, 20);
-
 let limiter = new __WEBPACK_IMPORTED_MODULE_0_tone___default.a.Limiter(-15);
-
 let efxPanel = false;
 
-// add little indicator for vibrato!
-// also add pitch bend! could be control and option
+// TODO:  add pitch bend! could be arrow keys
 
 const FXBANK = {
   "tremolo": [tremolo, 0.6],
@@ -235,7 +226,6 @@ const ACTIVEFX = {
 
 const waveform = new __WEBPACK_IMPORTED_MODULE_0_tone___default.a.Analyser("waveform", 2048);
 waveform.smoothing = 1;
-// instrument.connect(waveform);
 
 // ##### meter analyser ##### //
 // const meter = new Tone.Meter(0.8);
@@ -246,6 +236,11 @@ waveform.smoothing = 1;
 // mic.connect(waveform);
 // .toMaster();
 // mic.open();
+
+
+///////////////////////////////////////////////////////////////////
+// connect instrument to effects, analysers, and master output. ///
+///////////////////////////////////////////////////////////////////
 
 const chainItUp = () => {
   instrument.chain(
@@ -258,6 +253,10 @@ const chainItUp = () => {
 }
 
 //----------------------------//
+/////////////////////////////////////////////////////
+// main drawing function, takes waveform analyser ///
+////  data and draws strokes on canvas element //////
+/////////////////////////////////////////////////////
 
 const drawLoop = () => {
   const canvas = document.getElementById("canvas");
@@ -329,6 +328,66 @@ const switchInst = direction => {
 
 };
 
+const effectToggle = (effect, effectStr) => {
+  if (!ACTIVEFX[effect]) {
+    effect.wet.rampTo(FXBANK[effectStr][1], .1);
+    $(`.${effectStr}`)[0].value = FXBANK[effectStr][1];
+    ACTIVEFX[effect] = true;
+  }
+  else {
+    effect.wet.rampTo(0, .1);
+    $(`.${effectStr}`)[0].value = 0;
+    ACTIVEFX[effect] = false;
+  }
+  toggleOn(effectStr);
+};
+
+const vibratoToggle = ($vibrato, $vibratoKey) => {
+  if (!ACTIVEFX[vibrato]) {
+    vibrato.wet.rampTo(FXBANK["vibrato"][1], .1);
+    ACTIVEFX[vibrato] = true;
+  }
+  else {
+    vibrato.wet.rampTo(0, .1);
+    ACTIVEFX[vibrato] = false;
+  }
+  $vibrato.toggleClass('active');
+  $vibratoKey.toggleClass('keydown');
+  setTimeout(() => {
+    $vibratoKey.toggleClass('keydown');
+  }, 120);
+};
+
+const octaveUp = ($octave, $octaveUp) => {
+  if (octave < 6) {
+    octave++;
+    $octave.toggleClass('active');
+    $octaveUp.toggleClass('keydown');
+    setTimeout(() => {
+      $octave.toggleClass('active');
+      $octaveUp.toggleClass('keydown');
+    }, 120);
+  }
+};
+
+const octaveDown = ($octave, $octaveDown) => {
+  if (octave > 1) {
+    octave--;
+    $octave.toggleClass('active');
+    $octaveDown.toggleClass('keydown');
+    setTimeout(() => {
+      $octave.toggleClass('active');
+      $octaveDown.toggleClass('keydown');
+    }, 120);
+  }
+};
+
+const efxPaneToggle = $efxContainer => {
+  const val = efxPanel ? '-205px' : '0px';
+  efxPanel = !efxPanel;
+
+  $efxContainer.animate({ bottom: `${val}`}, 350);
+};
 //////////////////////
 //// touch events ////
 //////////////////////
@@ -509,51 +568,50 @@ $(document).ready(() => {
           case 'triangle':
             instrument = INSTRUMENTS["synth"];
             instrument.set({ oscillator: { type: "triangle" } });
-            instrument.volume.value = 0;
+            instrument.volume.rampTo(-5, .1);
             toggleInst(type, 'lightblue');
             octave = 4;
             break;
           case 'square':
             instrument = INSTRUMENTS["synth"];
             instrument.set({ oscillator: { type: "square" } });
-            instrument.volume.value = -10;
+            instrument.volume.rampTo(-10, 0.1);
             toggleInst(type, 'orangeyellow');
             octave = 4;
             break;
           case 'sine':
             instrument = INSTRUMENTS["synth"];
             instrument.set({ oscillator: { type: "sine" } });
-            instrument.volume.value = -5;
+            instrument.volume.rampTo(-5, .1);
             toggleInst(type, 'green');
             octave = 4;
             break;
           case 'membrane':
             instrument = INSTRUMENTS["membrane"];
-            instrument.volume.value = -3;
+            instrument.volume.rampTo(-3, .1);
             toggleInst(type, 'redorange');
             octave = 1;
             break;
           case 'fm':
             instrument = INSTRUMENTS["fm"];
-            instrument.volume.value = 0;
+            instrument.volume.rampTo(0, .1);
             toggleInst(type, 'purple');
             octave = 2;
             break;
         }
 
         chainItUp();
-
       });
 
       $mute.click(e => {
         let status = e.target.innerHTML;
         if (status === 'volume_up') {
           e.target.innerHTML = 'volume_off';
-          __WEBPACK_IMPORTED_MODULE_0_tone___default.a.Master.mute = true;
+          __WEBPACK_IMPORTED_MODULE_0_tone___default.a.Master.volume.rampTo(-Infinity, .1)
         }
         else {
           e.target.innerHTML = 'volume_up';
-          __WEBPACK_IMPORTED_MODULE_0_tone___default.a.Master.mute = false;
+          __WEBPACK_IMPORTED_MODULE_0_tone___default.a.Master.volume.rampTo(0, .1);
         }
       });
 
@@ -572,70 +630,29 @@ $(document).ready(() => {
       });
 
       $octaveUp.click(e => {
-        if (octave < 6) {
-          octave++;
-          $octave.toggleClass('active');
-          $octaveUp.toggleClass('keydown');
-          setTimeout(() => {
-            $octave.toggleClass('active');
-            $octaveUp.toggleClass('keydown');
-          }, 120);
-        }
+        octaveUp($octave, $octaveUp);
       });
 
       $octaveDown.click(e => {
-        if (octave > 1) {
-          octave--;
-          $octave.toggleClass('active');
-          $octaveDown.toggleClass('keydown');
-          setTimeout(() => {
-            $octave.toggleClass('active');
-            $octaveDown.toggleClass('keydown');
-          }, 120);
-        }
+        octaveDown($octave, $octaveDown);
       });
 
       $vibratoKey.click(e => {
-        if (!ACTIVEFX[vibrato]) {
-          vibrato.wet.value = FXBANK["vibrato"][1];
-          ACTIVEFX[vibrato] = true;
-        }
-        else {
-          vibrato.wet.value = 0;
-          ACTIVEFX[vibrato] = false;
-        }
-        $vibrato.toggleClass('active');
-        $vibratoKey.toggleClass('keydown');
-        setTimeout(() => {
-          $vibratoKey.toggleClass('keydown');
-        }, 120);
+        vibratoToggle($vibrato, $vibratoKey);
       });
 
       $efxPane.click(e => {
-        const val = efxPanel ? '-205px' : '0px';
-        efxPanel = !efxPanel;
-
-        $efxContainer.animate({ bottom: `${val}`}, 350);
+        efxPaneToggle($efxContainer);
       });
 
       $efxButtons.click(e => {
-        const effectName = e.target.id;
-        let effect = FXBANK[effectName][0];
+        const effectStr = e.target.id;
+        let effect = FXBANK[effectStr][0];
 
-        if (!ACTIVEFX[effect]) {
-          effect.wet.value = FXBANK[effectName][1];
-          $(`.${effectName}`)[0].value = FXBANK[effectName][1];
-          ACTIVEFX[effect] = true;
-          toggleOn(effectName);
-        }
-        else {
-          effect.wet.value = 0;
-          $(`.${effectName}`)[0].value = 0;
-          ACTIVEFX[effect] = false;
-          toggleOn(effectName);
-        }
+        effectToggle(effect, effectStr);
       });
 
+      // separate keydown listener for changing instrument with arrow keys.
       $body.keydown(e => {
         if (__WEBPACK_IMPORTED_MODULE_0_tone___default.a.context.state !== 'running') { return }
 
@@ -720,24 +737,14 @@ $(document).ready(() => {
 
           switch (change) {
             case "toggle":
-              if (!ACTIVEFX[effect]) {
-                effect.wet.value = FXBANK[effectStr][1];
-                $(`.${effectStr}`)[0].value = FXBANK[effectStr][1];
-                ACTIVEFX[effect] = true;
-              }
-              else {
-                effect.wet.value = 0;
-                $(`.${effectStr}`)[0].value = 0;
-                ACTIVEFX[effect] = false;
-              }
-              toggleOn(effectStr);
+              effectToggle(effect, effectStr);
               break;
             case "down":
               if (!ACTIVEFX[effect]) {
                 return;
               }
               else {
-                effect.wet.value -= 0.2;
+                effect.wet.rampTo(effect.wet.value - 0.2, .1);
                 $(`.${effectStr}`)[0].value -= 0.2;
                 FXBANK[effectStr][1] = effect.wet.value;
               }
@@ -747,7 +754,7 @@ $(document).ready(() => {
                 return;
               }
               else {
-                effect.wet.value += 0.2;
+                effect.wet.rampTo(effect.wet.value + 0.2, .1);
                 $(`.${effectStr}`)[0].value += 0.2;
                 FXBANK[effectStr][1] = effect.wet.value;
               }
@@ -755,10 +762,7 @@ $(document).ready(() => {
           }
         }
         else if (keyDown === 'Control') { // show & hide efx panel
-          const val = efxPanel ? '-205px' : '0px';
-          efxPanel = !efxPanel;
-
-          $efxContainer.animate({ bottom: `${val}`}, 350);
+          efxPaneToggle($efxContainer);
         }
       });
 
@@ -788,6 +792,12 @@ $(document).ready(() => {
 
           const noteUp = KEYCODES[keyUp][0];
           const colorUp = KEYCODES[keyUp][1];
+
+          const $note = $(`#${noteUp}`);
+
+          if (!$note.hasClass('keydown')) {
+            return;
+          }
 
             // turn off noteUp //
             if (noteUp[0] !== 'e') {
@@ -820,46 +830,18 @@ $(document).ready(() => {
 
       });
 
-      // extra keys: change instrument, octave switch, vibrato toggle
+      // extra keys: octave switch, vibrato toggle
       document.addEventListener('keypress', e => {
         const keyPress = e.key;
         switch (keyPress) {
           case '=':
-            if (octave < 6) {
-              octave++;
-              $octave.toggleClass('active');
-              $octaveUp.toggleClass('keydown');
-              setTimeout(() => {
-                $octave.toggleClass('active');
-                $octaveUp.toggleClass('keydown');
-              }, 120);
-            }
+            octaveUp($octave, $octaveUp);
             break;
           case '-':
-            if (octave > 1) {
-              octave--;
-              $octave.toggleClass('active');
-              $octaveDown.toggleClass('keydown');
-              setTimeout(() => {
-                $octave.toggleClass('active');
-                $octaveDown.toggleClass('keydown');
-              }, 120);
-            }
+            octaveDown($octave, $octaveDown);
             break;
           case '`':
-            if (!ACTIVEFX[vibrato]) {
-              vibrato.wet.value = FXBANK["vibrato"][1];
-              ACTIVEFX[vibrato] = true;
-            }
-            else {
-              vibrato.wet.value = 0;
-              ACTIVEFX[vibrato] = false;
-            }
-            $vibrato.toggleClass('active');
-            $vibratoKey.toggleClass('keydown');
-            setTimeout(() => {
-              $vibratoKey.toggleClass('keydown');
-            }, 120);
+            vibratoToggle($vibrato, $vibratoKey);
             break;
           default:
             return;
