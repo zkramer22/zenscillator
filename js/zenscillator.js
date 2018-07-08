@@ -183,10 +183,10 @@ const chainItUp = () => {
 ////  data and draws strokes on canvas element //////
 /////////////////////////////////////////////////////
 const drawLoop = () => {
-  const canvas = document.getElementById("canvas");
-  const ctx = canvas.getContext("2d");
-  ctx.canvas.width = $('#canvas').width();
-  ctx.canvas.height = $('#canvas').height();
+  const $canvas = $('#canvas');
+  const ctx = $canvas[0].getContext("2d");
+  ctx.canvas.width = $canvas.width();
+  ctx.canvas.height = $canvas.height();
   const canvasWidth = ctx.canvas.width;
   const canvasHeight = ctx.canvas.height;
   let values = waveform.getValue();
@@ -194,7 +194,7 @@ const drawLoop = () => {
 
   ctx.clearRect(0, 0, canvasWidth, canvasHeight);
 
-  var ctxGradient = ctx.createLinearGradient(0, 0, canvasWidth, canvasHeight);
+  const ctxGradient = ctx.createLinearGradient(0, 0, canvasWidth, canvasHeight);
   window.gradient.forEach((hex, i) => {
     ctxGradient.addColorStop(String(Math.abs(i / window.gradient.length)), hex);
   });
@@ -451,15 +451,10 @@ $(document).ready(() => {
   const $efxPane = $('#efxPane');
   const $efxContainer = $('#efxContainer');
   const $efxButtons = $('.efxButton');
-  const $canvas = $('#canvas');
-  const ctx = $canvas[0].getContext('2d');
 
       chainItUp();
 
       $body.contextmenu(e => e.preventDefault());
-
-      ctx.canvas.width = $canvas.width();
-      ctx.canvas.height = $canvas.height();
 
       $('#instructions-container').fadeIn(1000);
 
@@ -655,7 +650,7 @@ $(document).ready(() => {
           let change = FXCODES[keyDown][1];
           let effectStr = FXCODES[keyDown][2];
 
-          if ((e.repeat) && (change === "toggle")) { return }
+          if (e.repeat) { return }
 
           switch (change) {
             case "toggle":
