@@ -128,8 +128,8 @@ a {
 
 #canvas {
   position: absolute;
-  top: 13%;
-  height: 57%;
+  top: 0;
+  height: 100%;
   width: 100%;
 }
 

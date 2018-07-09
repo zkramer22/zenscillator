@@ -151,7 +151,7 @@ const ACTIVEFX = {
 ///// analysers /////
 /////////////////////
 
-const waveform = new Tone.Analyser("waveform", 2048);
+const waveform = new Tone.Analyser("waveform", 1024); // TODO: change to 2048
 waveform.smoothing = 1;
 
 // ##### meter analyser ##### //
@@ -178,11 +178,20 @@ const chainItUp = () => {
   );
 }
 
+const createGradient = (ctx, canvasWidth, canvasHeight) => {
+  const ctxGradient = ctx.createLinearGradient(0, 0, canvasWidth, canvasHeight);
+  window.gradient.forEach((hex, i) => {
+    ctxGradient.addColorStop(String(Math.abs(i / window.gradient.length)), hex);
+  });
+  ctx.strokeStyle = ctxGradient;
+};
+
+
 /////////////////////////////////////////////////////
-// main drawing function, takes waveform analyser ///
+//// drawing functions, takes waveform analyser /////
 ////  data and draws strokes on canvas element //////
 /////////////////////////////////////////////////////
-const drawLoop = () => {
+const drawLoopStraight = () => {
   const $canvas = $('#canvas');
   const ctx = $canvas[0].getContext("2d");
   ctx.canvas.width = $canvas.width();
@@ -194,11 +203,7 @@ const drawLoop = () => {
 
   ctx.clearRect(0, 0, canvasWidth, canvasHeight);
 
-  const ctxGradient = ctx.createLinearGradient(0, 0, canvasWidth, canvasHeight);
-  window.gradient.forEach((hex, i) => {
-    ctxGradient.addColorStop(String(Math.abs(i / window.gradient.length)), hex);
-  });
-  ctx.strokeStyle = ctxGradient;
+  createGradient(ctx, canvasWidth, canvasHeight);
 
   ctx.beginPath();
   ctx.lineJoin = "round";
@@ -207,13 +212,50 @@ const drawLoop = () => {
   ctx.moveTo(0, (values[0] + 1) / 2 * canvasHeight);
   for (let i = 1, len = values.length; i < len; i += 1) {
     const val = (values[i] + 1) / 2;
-    const x = canvasWidth * (i / (len - 1));
-    const y = val * canvasHeight;
+    const x = canvasWidth * (i / (len - 1));  // width of canvas multiplied by current percent progress through the 'values' array.
+    const y = val * canvasHeight;             // height of canvas multiplied by 1.x / 2
     ctx.lineTo(x, y);
   }
   ctx.stroke();
 }
 
+const drawLoopCircle = () => {
+  const $canvas = $('#canvas');
+  const ctx = $canvas[0].getContext("2d");
+  ctx.canvas.width = $canvas.width();
+  ctx.canvas.height = $canvas.height();
+  const canvasWidth = ctx.canvas.width;
+  const canvasHeight = ctx.canvas.height;
+  let values = waveform.getValue();
+  // let level = meter.getLevel();
+
+  createGradient(ctx, canvasWidth, canvasHeight);
+
+  ctx.beginPath();
+  ctx.lineJoin = "round";
+  ctx.lineWidth = lineWidth;
+
+  const centerX = canvasWidth / 2;
+  const centerY = canvasHeight / 2;
+  const radius = canvasHeight / 4;
+
+  for (let i = 1, angle = 0, len = values.length; i < len; i += 1, angle += circleSpeed) {
+    const val = (values[i] + 1);
+    const x = centerX + Math.cos(angle) * radius * val;
+    const y = centerY + Math.sin(angle) * radius * val;
+    ctx.lineTo(x, y);
+  }
+  ctx.stroke();
+}
+
+const DRAWERS = [
+  drawLoopStraight,
+  drawLoopCircle
+];
+
+let circleSpeed = 0.1;
+let lineWidth = 3;
+let drawLoop = DRAWERS[0];
 //////////////////////
 ///// DOM manip //////
 //////////////////////
@@ -456,7 +498,7 @@ $(document).ready(() => {
 
       $body.contextmenu(e => e.preventDefault());
 
-      $('#instructions-container').fadeIn(1000);
+      // $('#instructions-container').fadeIn(1000);
 
       // click to play notes. Mouseup and mousemove events inside.
       $keys.mousedown(e => {
@@ -604,10 +646,20 @@ $(document).ready(() => {
         const keyDown = e.key;
 
         if (keyDown === 'ArrowLeft') {
+          e.preventDefault();
           switchInst('prev');
         }
         else if (keyDown === 'ArrowRight') {
+          e.preventDefault();
           switchInst('next');
+        }
+        else if (keyDown === 'ArrowUp') {
+          e.preventDefault();
+          drawLoop = DRAWERS[0];
+        }
+        else if (keyDown === 'ArrowDown') {
+          e.preventDefault();
+          drawLoop = DRAWERS[1];
         }
       });
 
@@ -622,9 +674,10 @@ $(document).ready(() => {
 
         const keyDown = e.key;
 
-        if (MODKEYS.hasOwnProperty(keyDown)) { MODKEYS[keyDown] = true; }
-
-        if (KEYCODES.hasOwnProperty(keyDown)) {
+        if (MODKEYS.hasOwnProperty(keyDown)) {
+          MODKEYS[keyDown] = true
+        }
+        else if (KEYCODES.hasOwnProperty(keyDown)) {
             if (e.repeat) { return }
 
             // turn on note //
