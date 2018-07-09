@@ -179,7 +179,7 @@ let vibrato = new __WEBPACK_IMPORTED_MODULE_0_tone___default.a.Vibrato(
 );
 let compressor = new __WEBPACK_IMPORTED_MODULE_0_tone___default.a.Compressor(-24, 20);
 let limiter = new __WEBPACK_IMPORTED_MODULE_0_tone___default.a.Limiter(-15);
-let efxPanel = false;
+let efxPane = false;
 
 // TODO:  add pitch bend! could be up and down arrow keys
 
@@ -224,7 +224,7 @@ const ACTIVEFX = {
 ///// analysers /////
 /////////////////////
 
-const waveform = new __WEBPACK_IMPORTED_MODULE_0_tone___default.a.Analyser("waveform", 1024); // TODO: change to 2048
+const waveform = new __WEBPACK_IMPORTED_MODULE_0_tone___default.a.Analyser("waveform", 2048); // TODO: change to 2048
 waveform.smoothing = 1;
 
 // ##### meter analyser ##### //
@@ -321,14 +321,15 @@ const drawLoopCircle = () => {
   ctx.stroke();
 }
 
-const DRAWERS = [
-  drawLoopStraight,
-  drawLoopCircle
-];
+const DRAWERS = {
+  'straight': drawLoopStraight,
+  'circle': drawLoopCircle
+};
 
 let circleSpeed = 0.1;
 let lineWidth = 3;
-let drawLoop = DRAWERS[0];
+let drawLoop = DRAWERS['straight'];
+let visualsPane = false;
 //////////////////////
 ///// DOM manip //////
 //////////////////////
@@ -338,8 +339,8 @@ const sustainClassToggle = (note, color) => {
   $(`#${note}`).toggleClass(`${color}`).toggleClass('keydown');
 };
 
-const toggleOn = (effect) => {
-  $(`#${effect}`).toggleClass('active');
+const toggleOn = string => {
+  $(`#${string}`).toggleClass('active');
 };
 
 const toggleInst = (inst, color) => {
@@ -379,6 +380,12 @@ const effectToggle = (effect, effectStr) => {
     ACTIVEFX[effect] = false;
   }
   toggleOn(effectStr);
+};
+
+const visualToggle = visualStr => {
+  drawLoop = DRAWERS[visualStr];
+  $('.visualsButton').removeClass('active');
+  $(`#${visualStr}`).addClass('active');
 };
 
 const vibratoToggle = ($vibrato, $vibratoKey) => {
@@ -422,10 +429,17 @@ const octaveDown = ($octave, $octaveDown) => {
 };
 
 const efxPaneToggle = $efxContainer => {
-  const val = efxPanel ? '-205px' : '0px';
-  efxPanel = !efxPanel;
+  const val = efxPane ? '-205px' : '0px';
+  efxPane = !efxPane;
 
   $efxContainer.animate({ bottom: `${val}`}, 350);
+};
+
+const visualsPaneToggle = $visualsContainer => {
+  const val = visualsPane ? '-100px' : '0px';
+  visualsPane = !visualsPane;
+
+  $visualsContainer.animate({ bottom: `${val}`}, 350);
 };
 
 const gradientHandler = hex => {
@@ -566,12 +580,15 @@ $(document).ready(() => {
   const $efxPane = $('#efxPane');
   const $efxContainer = $('#efxContainer');
   const $efxButtons = $('.efxButton');
+  const $visualsPane = $('#visualsPane');
+  const $visualsContainer = $('#visualsContainer');
+  const $visualsButtons = $('.visualsButton');
 
       chainItUp();
 
       $body.contextmenu(e => e.preventDefault());
 
-      // $('#instructions-container').fadeIn(1000);
+      $('#instructions-container').fadeIn(1000); 
 
       // click to play notes. Mouseup and mousemove events inside.
       $keys.mousedown(e => {
@@ -707,9 +724,17 @@ $(document).ready(() => {
 
       $efxButtons.click(e => {
         const effectStr = e.target.id;
-        let effect = FXBANK[effectStr][0];
-
+        const effect = FXBANK[effectStr][0];
         effectToggle(effect, effectStr);
+      });
+
+      $visualsPane.click(e => {
+        visualsPaneToggle($visualsContainer);
+      });
+
+      $visualsButtons.click(e => {
+        const visualStr = e.target.id;
+        visualToggle(visualStr);
       });
 
       // separate keydown listener for changing instrument with arrow keys.
@@ -725,14 +750,6 @@ $(document).ready(() => {
         else if (keyDown === 'ArrowRight') {
           e.preventDefault();
           switchInst('next');
-        }
-        else if (keyDown === 'ArrowUp') {
-          e.preventDefault();
-          drawLoop = DRAWERS[0];
-        }
-        else if (keyDown === 'ArrowDown') {
-          e.preventDefault();
-          drawLoop = DRAWERS[1];
         }
       });
 
