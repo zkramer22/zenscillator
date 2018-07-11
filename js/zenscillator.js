@@ -77,7 +77,7 @@ $(document).ready(() => {
 
       $body.contextmenu(e => e.preventDefault());
 
-      // $('#instructions-container').fadeIn(1000);
+      $('#instructions-container').fadeIn(1000);
 
       // click to play notes. Mouseup and mousemove events inside.
       $keys.mousedown(e => {
