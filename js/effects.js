@@ -39,21 +39,11 @@ export const FXBANK = {
 
 // keyboard keys linked to effects.
 export const FXCODES = {
-  '1'  : [tremolo, "down", "tremolo"],
-  '2'  : [tremolo, "up", "tremolo"],
-  'q'  : [tremolo, "toggle", "tremolo"],
-  '3'  : [autopan, "down", "autopan"],
-  '4'  : [autopan, "up", "autopan"],
-  'e'  : [autopan, "toggle", "autopan"],
-  '5'  : [splash, "down", "splash"],
-  '6'  : [splash, "up", "splash"],
-  't'  : [splash, "toggle", "splash"],
-  '7'  : [delay, "down", "delay"],
-  '8'  : [delay, "up", "delay"],
-  'u'  : [delay, "toggle", "delay"],
-  '9'  : [reverb, "down", "reverb"],
-  '0'  : [reverb, "up", "reverb"],
-  'o'  : [reverb, "toggle", "reverb"],
+  'q'  : [tremolo, "tremolo"],
+  'e'  : [autopan, "autopan"],
+  't'  : [splash, "splash"],
+  'u'  : [delay, "delay"],
+  'o'  : [reverb, "reverb"]
 };
 
 // effect states
@@ -78,12 +68,12 @@ export const efxPaneToggle = $efxContainer => {
 export const effectToggle = (effect, effectStr) => {
   if (!ACTIVEFX[effect]) {
     effect.wet.rampTo(FXBANK[effectStr][1], .1);
-    $(`.${effectStr}`)[0].value = FXBANK[effectStr][1];
+    // $(`.${effectStr}`)[0].value = FXBANK[effectStr][1];
     ACTIVEFX[effect] = true;
   }
   else {
     effect.wet.rampTo(0, .1);
-    $(`.${effectStr}`)[0].value = 0;
+    // $(`.${effectStr}`)[0].value = 0;
     ACTIVEFX[effect] = false;
   }
   $(`#${effectStr}`).toggleClass('active');

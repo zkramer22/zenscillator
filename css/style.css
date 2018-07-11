@@ -383,34 +383,20 @@ a {
 }
 
 #efxContainer {
-  position: absolute;
-  z-index: 4;
-  bottom: -205px;
   left: 10px;
-  display: flex;
-  flex-direction: column;
-  height: 192px;
-  width: 380px;
-  padding: 10px 10px 2px 10px;
+  padding: 10px 0 2px 0;
   color: rgba(255, 255, 255, 0.6);
   background-color: black;
   border: 1px solid rgba(255, 255, 255, 0.6);
   border-bottom: none;
-  border-radius: 0px 20px 0 0;
+  border-radius: 0px 0 0;
   cursor: default;
 }
 
 #visualsContainer {
-  position: absolute;
-  z-index: 4;
-  bottom: -100px;
+  bottom: -205px;
   right: 10px;
-  display: flex;
-  flex-direction: column;
   justify-content: space-around;
-  align-items: center;
-  height: 90px;
-  width: 150px;
   padding: 10px 0 2px 0px;
   color: rgba(255, 255, 255, 0.6);
   background-color: black;
@@ -420,8 +406,20 @@ a {
   cursor: default;
 }
 
+#efxContainer, #visualsContainer {
+  position: absolute;
+  z-index: 4;
+  bottom: -205px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 150px;
+  height: 192px;
+
+}
+
 .efxButton {
-  width: 20%;
+  width: 70px;
   border: 1px solid;
   border-radius: 5px;
   padding: 5px 5px;
@@ -441,13 +439,12 @@ a {
 }
 
 .efxButton:hover, .visualsButton:hover {
-  border: 1px solid white;
   color: white;
 }
 
 .effect {
   display: flex;
-  justify-content: space-around;
+  justify-content: space-evenly;
   align-items: center;
   height: 20%;
   width: 100%;
@@ -489,6 +486,86 @@ progress[value]::-webkit-progress-value {
   display: none;
 }
 
+.circleSpeed-container, .lineWidth-container {
+  display: flex;
+  align-items: center;
+}
+
+.circleSpeed-container {
+  justify-content: space-around;
+  width: 130px;
+}
+
+.lineWidth-container {
+  justify-content: center;
+  height: 20px;
+  width: 117px;
+  border: 1px solid;
+  border-radius: 5px;
+}
+
+#lineWidth:hover {
+  cursor: pointer;
+}
+
+.circleSpeed {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 25px;
+  height: 25px;
+  font-size: 14px;
+  border: 1px solid;
+  border-radius: 50%;
+  transition: all .1s linear;
+}
+
+.circleSpeed:hover {
+  color: white;
+  cursor: pointer;
+}
+
+#lineWidth-fill {
+  position: absolute;
+  z-index: -3;
+  left: 17px;
+  height: 20px;
+  width: 30%;
+  border-radius: 3px;
+  background-color: rgba(144, 239, 144, 0.8);
+}
+
+#lineWidth-label {
+  position: absolute;
+  z-index: -2;
+}
+
+input[type=range] {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+}
+
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+}
+
+input[type=range]:focus {
+  outline: none;
+}
+
+input[type=range]::-webkit-slider-thumb {
+  position: relative;
+  bottom: -7px;
+  -webkit-appearance: none;
+  height: 15px;
+  width: 0px;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  cursor: pointer;
+  margin-top: -14px;
+}
 /*  *//*  */
 /* OTHER  */
 /*  *//*  */

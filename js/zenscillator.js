@@ -16,18 +16,26 @@ import {
 
 class Zenscillator {
   constructor() {
-    this.instrument = INSTRUMENTS['synth'];
+    this.instrument = INSTRUMENTS['sine'];
     this.octave = 4;
 
     this.drawLoop = DRAWERS['straight'];
     this.lineWidth = 3;
-    this.circleSpeed = 0.1;
+    this.circleSpeed = 69.1;
+    this.radiusDenom = 4;
 
     this.efxPane = false;
     this.visualsPane = false;
   }
 
   chainItUp() {
+    if (Zen.instrument === INSTRUMENTS['square']) {
+      Zen.instrument.volume.value = -20;
+    }
+    else {
+      Zen.instrument.volume.value = -5;
+    }
+
     Zen.instrument.chain(
       tremolo, vibrato,
       autopan, splash, reverb, delay,
@@ -61,12 +69,15 @@ $(document).ready(() => {
   const $visualsPane = $('#visualsPane');
   const $visualsContainer = $('#visualsContainer');
   const $visualsButtons = $('.visualsButton');
+  const $lineWidth = $('#lineWidth');
+  const $lineWidthFill = $('#lineWidth-fill');
+  const $circleSpeeds = $('.circleSpeed');
 
       Zen.chainItUp();
 
       $body.contextmenu(e => e.preventDefault());
 
-      $('#instructions-container').fadeIn(1000);
+      // $('#instructions-container').fadeIn(1000);
 
       // click to play notes. Mouseup and mousemove events inside.
       $keys.mousedown(e => {
@@ -121,35 +132,27 @@ $(document).ready(() => {
 
         switch (type) {
           case 'triangle':
-            Zen.instrument = INSTRUMENTS["synth"];
-            Zen.instrument.set({ oscillator: { type: "triangle" } });
-            Zen.instrument.volume.rampTo(-5, .1);
+            Zen.instrument = INSTRUMENTS["triangle"];
             toggleInst(type, 'lightblue');
             Zen.octave = 4;
             break;
           case 'square':
-            Zen.instrument = INSTRUMENTS["synth"];
-            Zen.instrument.set({ oscillator: { type: "square" } });
-            Zen.instrument.volume.rampTo(-10, 0.1);
+            Zen.instrument = INSTRUMENTS["square"];
             toggleInst(type, 'orangeyellow');
             Zen.octave = 4;
             break;
           case 'sine':
-            Zen.instrument = INSTRUMENTS["synth"];
-            Zen.instrument.set({ oscillator: { type: "sine" } });
-            Zen.instrument.volume.rampTo(-5, .1);
+            Zen.instrument = INSTRUMENTS["sine"];
             toggleInst(type, 'green');
             Zen.octave = 4;
             break;
           case 'membrane':
             Zen.instrument = INSTRUMENTS["membrane"];
-            Zen.instrument.volume.rampTo(-3, .1);
             toggleInst(type, 'redorange');
             Zen.octave = 1;
             break;
           case 'fm':
             Zen.instrument = INSTRUMENTS["fm"];
-            Zen.instrument.volume.rampTo(0, .1);
             toggleInst(type, 'purple');
             Zen.octave = 2;
             break;
@@ -215,6 +218,52 @@ $(document).ready(() => {
         visualToggle(visualStr);
       });
 
+      $lineWidth.mousedown(e => {
+        const pageX = e.pageX;
+        const offset = $(e.target).offset().left;
+        const clickSpot = (pageX - offset) / 117;
+
+        $lineWidthFill.width(clickSpot * 117);
+        Zen.lineWidth = Math.round(clickSpot * 100) / 10;
+
+        if (Zen.lineWidth < 1) {
+          Zen.lineWidth = 1;
+        }
+
+        $lineWidth.mousemove(eMove => {
+          const moveVal = eMove.target.value;
+          $lineWidthFill.width(moveVal / 100 * 117);
+          Zen.lineWidth = Math.round(moveVal) / 10;
+
+          if (Zen.lineWidth < 1) {
+            Zen.lineWidth = 1;
+          }
+        });
+
+        $lineWidth.mouseup(eUp => {
+          $lineWidth.off('mousemove');
+        });
+
+      });
+
+      $circleSpeeds.click(e => {
+        const $target = $(e.target);
+        const num = $target.text();
+
+        if (num === '2') {
+          Zen.circleSpeed = 25.1;
+        }
+        else if (num === '3') {
+          Zen.circleSpeed = 0.1;
+        }
+        else {
+          Zen.circleSpeed = 69.1;
+        }
+
+        $circleSpeeds.removeClass('active');
+        $target.addClass('active');
+      });
+
       // separate keydown listener for changing instrument with arrow keys.
       $body.keydown(e => {
         if (Tone.context.state !== 'running') { return }
@@ -268,39 +317,11 @@ $(document).ready(() => {
         }
         else if (FXCODES.hasOwnProperty(keyDown)) {
           let effect = FXCODES[keyDown][0];
-          let change = FXCODES[keyDown][1];
-          let effectStr = FXCODES[keyDown][2];
+          let effectStr = FXCODES[keyDown][1];
 
           if (e.repeat) { return }
 
-          switch (change) {
-            case "toggle":
-              effectToggle(effect, effectStr);
-              break;
-            case "down":
-              if (!ACTIVEFX[effect]) {
-                return;
-              }
-              else {
-                effect.wet.rampTo(effect.wet.value - 0.2, .1);
-                $(`.${effectStr}`)[0].value -= 0.2;
-                FXBANK[effectStr][1] = effect.wet.value;
-              }
-              break;
-            case "up":
-              if (!ACTIVEFX[effect]) {
-                return;
-              }
-              else {
-                effect.wet.rampTo(effect.wet.value + 0.2, .1);
-                $(`.${effectStr}`)[0].value += 0.2;
-                FXBANK[effectStr][1] = effect.wet.value;
-              }
-              break;
-          }
-        }
-        else if (keyDown === 'Control') { // show & hide efx panel
-          efxPaneToggle($efxContainer);
+          effectToggle(effect, effectStr);
         }
       });
 

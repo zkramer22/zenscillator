@@ -71,11 +71,11 @@
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_tone__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_tone___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_tone__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__analysers__ = __webpack_require__(6);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__key_mouse__ = __webpack_require__(8);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__instruments__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__analysers__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__key_mouse__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__instruments__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__effects__ = __webpack_require__(5);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__visualizers__ = __webpack_require__(7);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__visualizers__ = __webpack_require__(6);
 
 
 
@@ -85,22 +85,30 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 class Zenscillator {
   constructor() {
-    this.instrument = __WEBPACK_IMPORTED_MODULE_3__instruments__["a" /* INSTRUMENTS */]['synth'];
+    this.instrument = __WEBPACK_IMPORTED_MODULE_3__instruments__["a" /* INSTRUMENTS */]['sine'];
     this.octave = 4;
 
     this.drawLoop = __WEBPACK_IMPORTED_MODULE_5__visualizers__["a" /* DRAWERS */]['straight'];
     this.lineWidth = 3;
-    this.circleSpeed = 0.1;
+    this.circleSpeed = 69.1;
+    this.radiusDenom = 4;
 
     this.efxPane = false;
     this.visualsPane = false;
   }
 
   chainItUp() {
+    if (Zen.instrument === __WEBPACK_IMPORTED_MODULE_3__instruments__["a" /* INSTRUMENTS */]['square']) {
+      Zen.instrument.volume.value = -20;
+    }
+    else {
+      Zen.instrument.volume.value = -5;
+    }
+
     Zen.instrument.chain(
-      __WEBPACK_IMPORTED_MODULE_4__effects__["l" /* tremolo */], __WEBPACK_IMPORTED_MODULE_4__effects__["m" /* vibrato */],
-      __WEBPACK_IMPORTED_MODULE_4__effects__["d" /* autopan */], __WEBPACK_IMPORTED_MODULE_4__effects__["k" /* splash */], __WEBPACK_IMPORTED_MODULE_4__effects__["j" /* reverb */], __WEBPACK_IMPORTED_MODULE_4__effects__["f" /* delay */],
-      __WEBPACK_IMPORTED_MODULE_4__effects__["e" /* compressor */], __WEBPACK_IMPORTED_MODULE_4__effects__["i" /* limiter */],
+      __WEBPACK_IMPORTED_MODULE_4__effects__["k" /* tremolo */], __WEBPACK_IMPORTED_MODULE_4__effects__["l" /* vibrato */],
+      __WEBPACK_IMPORTED_MODULE_4__effects__["c" /* autopan */], __WEBPACK_IMPORTED_MODULE_4__effects__["j" /* splash */], __WEBPACK_IMPORTED_MODULE_4__effects__["i" /* reverb */], __WEBPACK_IMPORTED_MODULE_4__effects__["e" /* delay */],
+      __WEBPACK_IMPORTED_MODULE_4__effects__["d" /* compressor */], __WEBPACK_IMPORTED_MODULE_4__effects__["h" /* limiter */],
       __WEBPACK_IMPORTED_MODULE_1__analysers__["a" /* waveform */],
       __WEBPACK_IMPORTED_MODULE_0_tone___default.a.Master
     );
@@ -132,12 +140,15 @@ $(document).ready(() => {
   const $visualsPane = $('#visualsPane');
   const $visualsContainer = $('#visualsContainer');
   const $visualsButtons = $('.visualsButton');
+  const $lineWidth = $('#lineWidth');
+  const $lineWidthFill = $('#lineWidth-fill');
+  const $circleSpeeds = $('.circleSpeed');
 
       Zen.chainItUp();
 
       $body.contextmenu(e => e.preventDefault());
 
-      $('#instructions-container').fadeIn(1000);
+      // $('#instructions-container').fadeIn(1000);
 
       // click to play notes. Mouseup and mousemove events inside.
       $keys.mousedown(e => {
@@ -192,35 +203,27 @@ $(document).ready(() => {
 
         switch (type) {
           case 'triangle':
-            Zen.instrument = __WEBPACK_IMPORTED_MODULE_3__instruments__["a" /* INSTRUMENTS */]["synth"];
-            Zen.instrument.set({ oscillator: { type: "triangle" } });
-            Zen.instrument.volume.rampTo(-5, .1);
+            Zen.instrument = __WEBPACK_IMPORTED_MODULE_3__instruments__["a" /* INSTRUMENTS */]["triangle"];
             Object(__WEBPACK_IMPORTED_MODULE_3__instruments__["h" /* toggleInst */])(type, 'lightblue');
             Zen.octave = 4;
             break;
           case 'square':
-            Zen.instrument = __WEBPACK_IMPORTED_MODULE_3__instruments__["a" /* INSTRUMENTS */]["synth"];
-            Zen.instrument.set({ oscillator: { type: "square" } });
-            Zen.instrument.volume.rampTo(-10, 0.1);
+            Zen.instrument = __WEBPACK_IMPORTED_MODULE_3__instruments__["a" /* INSTRUMENTS */]["square"];
             Object(__WEBPACK_IMPORTED_MODULE_3__instruments__["h" /* toggleInst */])(type, 'orangeyellow');
             Zen.octave = 4;
             break;
           case 'sine':
-            Zen.instrument = __WEBPACK_IMPORTED_MODULE_3__instruments__["a" /* INSTRUMENTS */]["synth"];
-            Zen.instrument.set({ oscillator: { type: "sine" } });
-            Zen.instrument.volume.rampTo(-5, .1);
+            Zen.instrument = __WEBPACK_IMPORTED_MODULE_3__instruments__["a" /* INSTRUMENTS */]["sine"];
             Object(__WEBPACK_IMPORTED_MODULE_3__instruments__["h" /* toggleInst */])(type, 'green');
             Zen.octave = 4;
             break;
           case 'membrane':
             Zen.instrument = __WEBPACK_IMPORTED_MODULE_3__instruments__["a" /* INSTRUMENTS */]["membrane"];
-            Zen.instrument.volume.rampTo(-3, .1);
             Object(__WEBPACK_IMPORTED_MODULE_3__instruments__["h" /* toggleInst */])(type, 'redorange');
             Zen.octave = 1;
             break;
           case 'fm':
             Zen.instrument = __WEBPACK_IMPORTED_MODULE_3__instruments__["a" /* INSTRUMENTS */]["fm"];
-            Zen.instrument.volume.rampTo(0, .1);
             Object(__WEBPACK_IMPORTED_MODULE_3__instruments__["h" /* toggleInst */])(type, 'purple');
             Zen.octave = 2;
             break;
@@ -264,17 +267,17 @@ $(document).ready(() => {
       });
 
       $vibratoKey.click(e => {
-        Object(__WEBPACK_IMPORTED_MODULE_4__effects__["n" /* vibratoToggle */])($vibrato, $vibratoKey);
+        Object(__WEBPACK_IMPORTED_MODULE_4__effects__["m" /* vibratoToggle */])($vibrato, $vibratoKey);
       });
 
       $efxPane.click(e => {
-        Object(__WEBPACK_IMPORTED_MODULE_4__effects__["h" /* efxPaneToggle */])($efxContainer);
+        Object(__WEBPACK_IMPORTED_MODULE_4__effects__["g" /* efxPaneToggle */])($efxContainer);
       });
 
       $efxButtons.click(e => {
         const effectStr = e.target.id;
-        const effect = __WEBPACK_IMPORTED_MODULE_4__effects__["b" /* FXBANK */][effectStr][0];
-        Object(__WEBPACK_IMPORTED_MODULE_4__effects__["g" /* effectToggle */])(effect, effectStr);
+        const effect = __WEBPACK_IMPORTED_MODULE_4__effects__["a" /* FXBANK */][effectStr][0];
+        Object(__WEBPACK_IMPORTED_MODULE_4__effects__["f" /* effectToggle */])(effect, effectStr);
       });
 
       $visualsPane.click(e => {
@@ -284,6 +287,52 @@ $(document).ready(() => {
       $visualsButtons.click(e => {
         const visualStr = e.target.id;
         Object(__WEBPACK_IMPORTED_MODULE_5__visualizers__["e" /* visualToggle */])(visualStr);
+      });
+
+      $lineWidth.mousedown(e => {
+        const pageX = e.pageX;
+        const offset = $(e.target).offset().left;
+        const clickSpot = (pageX - offset) / 117;
+
+        $lineWidthFill.width(clickSpot * 117);
+        Zen.lineWidth = Math.round(clickSpot * 100) / 10;
+
+        if (Zen.lineWidth < 1) {
+          Zen.lineWidth = 1;
+        }
+
+        $lineWidth.mousemove(eMove => {
+          const moveVal = eMove.target.value;
+          $lineWidthFill.width(moveVal / 100 * 117);
+          Zen.lineWidth = Math.round(moveVal) / 10;
+
+          if (Zen.lineWidth < 1) {
+            Zen.lineWidth = 1;
+          }
+        });
+
+        $lineWidth.mouseup(eUp => {
+          $lineWidth.off('mousemove');
+        });
+
+      });
+
+      $circleSpeeds.click(e => {
+        const $target = $(e.target);
+        const num = $target.text();
+
+        if (num === '2') {
+          Zen.circleSpeed = 25.1;
+        }
+        else if (num === '3') {
+          Zen.circleSpeed = 0.1;
+        }
+        else {
+          Zen.circleSpeed = 69.1;
+        }
+
+        $circleSpeeds.removeClass('active');
+        $target.addClass('active');
       });
 
       // separate keydown listener for changing instrument with arrow keys.
@@ -337,41 +386,13 @@ $(document).ready(() => {
             Object(__WEBPACK_IMPORTED_MODULE_3__instruments__["f" /* sustainClassToggle */])(`${note}`, `${color}`);
             Object(__WEBPACK_IMPORTED_MODULE_5__visualizers__["c" /* drawerOn */])();
         }
-        else if (__WEBPACK_IMPORTED_MODULE_4__effects__["c" /* FXCODES */].hasOwnProperty(keyDown)) {
-          let effect = __WEBPACK_IMPORTED_MODULE_4__effects__["c" /* FXCODES */][keyDown][0];
-          let change = __WEBPACK_IMPORTED_MODULE_4__effects__["c" /* FXCODES */][keyDown][1];
-          let effectStr = __WEBPACK_IMPORTED_MODULE_4__effects__["c" /* FXCODES */][keyDown][2];
+        else if (__WEBPACK_IMPORTED_MODULE_4__effects__["b" /* FXCODES */].hasOwnProperty(keyDown)) {
+          let effect = __WEBPACK_IMPORTED_MODULE_4__effects__["b" /* FXCODES */][keyDown][0];
+          let effectStr = __WEBPACK_IMPORTED_MODULE_4__effects__["b" /* FXCODES */][keyDown][1];
 
           if (e.repeat) { return }
 
-          switch (change) {
-            case "toggle":
-              Object(__WEBPACK_IMPORTED_MODULE_4__effects__["g" /* effectToggle */])(effect, effectStr);
-              break;
-            case "down":
-              if (!__WEBPACK_IMPORTED_MODULE_4__effects__["a" /* ACTIVEFX */][effect]) {
-                return;
-              }
-              else {
-                effect.wet.rampTo(effect.wet.value - 0.2, .1);
-                $(`.${effectStr}`)[0].value -= 0.2;
-                __WEBPACK_IMPORTED_MODULE_4__effects__["b" /* FXBANK */][effectStr][1] = effect.wet.value;
-              }
-              break;
-            case "up":
-              if (!__WEBPACK_IMPORTED_MODULE_4__effects__["a" /* ACTIVEFX */][effect]) {
-                return;
-              }
-              else {
-                effect.wet.rampTo(effect.wet.value + 0.2, .1);
-                $(`.${effectStr}`)[0].value += 0.2;
-                __WEBPACK_IMPORTED_MODULE_4__effects__["b" /* FXBANK */][effectStr][1] = effect.wet.value;
-              }
-              break;
-          }
-        }
-        else if (keyDown === 'Control') { // show & hide efx panel
-          Object(__WEBPACK_IMPORTED_MODULE_4__effects__["h" /* efxPaneToggle */])($efxContainer);
+          Object(__WEBPACK_IMPORTED_MODULE_4__effects__["f" /* effectToggle */])(effect, effectStr);
         }
       });
 
@@ -431,7 +452,7 @@ $(document).ready(() => {
             Object(__WEBPACK_IMPORTED_MODULE_3__instruments__["d" /* octaveDown */])($octave, $octaveDown);
             break;
           case '`':
-            Object(__WEBPACK_IMPORTED_MODULE_4__effects__["n" /* vibratoToggle */])($vibrato, $vibratoKey);
+            Object(__WEBPACK_IMPORTED_MODULE_4__effects__["m" /* vibratoToggle */])($vibrato, $vibratoKey);
             break;
           default:
             return;
@@ -24233,6 +24254,121 @@ var __WEBPACK_AMD_DEFINE_RESULT__;(function(root, factory){
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_tone__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_tone___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_tone__);
+
+
+/////////////////////
+///// analysers /////
+/////////////////////
+
+const waveform = new __WEBPACK_IMPORTED_MODULE_0_tone___default.a.Analyser(
+  { size: 2048, type: 'waveform', smoothing: 1 }
+);
+/* harmony export (immutable) */ __webpack_exports__["a"] = waveform;
+
+
+// ##### meter analyser ##### //
+// const meter = new Tone.Meter(0.8);
+// instrument.connect(meter);
+
+// ####### mic ######## //
+// let mic = new Tone.UserMedia();
+// mic.connect(waveform);
+// .toMaster();
+// mic.open();
+
+
+/***/ }),
+/* 3 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+// keyboard keys linked to piano notes and colors
+const KEYCODES = {
+  'z'  : ['C', 'red', '#ff3030'],
+  's'  : ['Db', 'redorange', '#ff6a30'],
+  'x'  : ['D', 'orange', '#ffaf30'],
+  'd'  : ['Eb', 'orangeyellow', '#ffd930'],
+  'c'  : ['E', 'yellow', '#fbff30'],
+  'v'  : ['F', 'green', '#4bff30'],
+  'g'  : ['Gb', 'teal', '#30ffb9'],
+  'b'  : ['G', 'lightblue', '#30fffb'],
+  'h'  : ['Ab', 'blue', '#30b9ff'],
+  'n'  : ['A', 'bluepurple', '#3048ff'],
+  'j'  : ['Bb', 'purple', '#c030ff'],
+  'm'  : ['B', 'magenta', '#ff30af'],
+  ','  : ['eC', 'red', '#ff3030'],
+  'l'  : ['eDb', 'redorange', '#ff6a30'],
+  '.'  : ['eD', 'orange', '#ffaf30'],
+  ';'  : ['eEb', 'orangeyellow', '#ffd930'],
+  '/'  : ['eE', 'yellow', '#fbff30']
+};
+/* harmony export (immutable) */ __webpack_exports__["a"] = KEYCODES;
+
+
+// keyboard key states - are the piano notes held down or not?
+const KEYSTATES = {
+  'z'  : false,
+  's'  : false,
+  'x'  : false,
+  'd'  : false,
+  'c'  : false,
+  'v'  : false,
+  'g'  : false,
+  'b'  : false,
+  'h'  : false,
+  'n'  : false,
+  'j'  : false,
+  'm'  : false,
+  ','  : false,
+  'l'  : false,
+  '.'  : false,
+  ';'  : false,
+  '/'  : false
+};
+/* harmony export (immutable) */ __webpack_exports__["b"] = KEYSTATES;
+
+
+// modifier key states
+const MODKEYS = {
+  'Meta': false, // MAC: command, WIN: windows
+  'Alt': false,
+  'Shift': false,
+  ' ': false
+};
+/* harmony export (immutable) */ __webpack_exports__["c"] = MODKEYS;
+
+
+// same as KEYCODES, except found by e.target.id when clicking on piano keys.
+const MOUSECODES = {
+  'C': ['red', '#ff3030'],
+  'Db': ['redorange', '#ff6a30'],
+  'D': ['orange', '#ffaf30'],
+  'Eb': ['orangeyellow', '#ffd930'],
+  'E': ['yellow', '#fbff30'],
+  'F': ['green', '#4bff30'],
+  'Gb': ['teal', '#30ffb9'],
+  'G': ['lightblue', '#30fffb'],
+  'Ab': ['blue', '#30b9ff'],
+  'A': ['bluepurple', '#3048ff'],
+  'Bb': ['purple', '#c030ff'],
+  'B': ['magenta', '#ff30af'],
+  'eC': ['red', '#ff3030'],
+  'eDb': ['redorange', '#ff6a30'],
+  'eD': ['orange', '#ffaf30'],
+  'eEb': ['orangeyellow', '#ffd930'],
+  'eE': ['yellow', '#fbff30']
+};
+/* harmony export (immutable) */ __webpack_exports__["d"] = MOUSECODES;
+
+
+
+/***/ }),
+/* 4 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_tone__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_tone___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_tone__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__zenscillator__ = __webpack_require__(0);
 
 
@@ -24242,7 +24378,9 @@ var __WEBPACK_AMD_DEFINE_RESULT__;(function(root, factory){
 //////////////////////
 
 const INSTRUMENTS = {
-  "synth"     : new __WEBPACK_IMPORTED_MODULE_0_tone___default.a.PolySynth(16, __WEBPACK_IMPORTED_MODULE_0_tone___default.a.Synth).set({ oscillator: { type: 'sine' }, volume: -5 }),
+  "sine"      : new __WEBPACK_IMPORTED_MODULE_0_tone___default.a.PolySynth(16, __WEBPACK_IMPORTED_MODULE_0_tone___default.a.Synth).set({ oscillator: { type: 'sine' } }),
+  "triangle"  : new __WEBPACK_IMPORTED_MODULE_0_tone___default.a.PolySynth(16, __WEBPACK_IMPORTED_MODULE_0_tone___default.a.Synth).set({ oscillator: { type: 'triangle' } }),
+  "square"    : new __WEBPACK_IMPORTED_MODULE_0_tone___default.a.PolySynth(16, __WEBPACK_IMPORTED_MODULE_0_tone___default.a.Synth).set({ oscillator: { type: 'square' } }),
   "membrane"  : new __WEBPACK_IMPORTED_MODULE_0_tone___default.a.PolySynth(2, __WEBPACK_IMPORTED_MODULE_0_tone___default.a.MembraneSynth),
   "fm"        : new __WEBPACK_IMPORTED_MODULE_0_tone___default.a.PolySynth(6, __WEBPACK_IMPORTED_MODULE_0_tone___default.a.FMSynth)
 };
@@ -24340,8 +24478,6 @@ const sustainClassToggle = (note, color) => {
 
 
 /***/ }),
-/* 3 */,
-/* 4 */,
 /* 5 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -24360,38 +24496,38 @@ const sustainClassToggle = (note, color) => {
 const tremolo = new __WEBPACK_IMPORTED_MODULE_0_tone___default.a.Tremolo(
   { frequency: "8n", type: "sine", depth: 1, spread: 0, wet: 0 }
 ).start();
-/* harmony export (immutable) */ __webpack_exports__["l"] = tremolo;
+/* harmony export (immutable) */ __webpack_exports__["k"] = tremolo;
 
 const autopan = new __WEBPACK_IMPORTED_MODULE_0_tone___default.a.AutoPanner(
   { frequency: "4n", depth: 1, wet: 0 }
 ).start();
-/* harmony export (immutable) */ __webpack_exports__["d"] = autopan;
+/* harmony export (immutable) */ __webpack_exports__["c"] = autopan;
 
 const splash = new __WEBPACK_IMPORTED_MODULE_0_tone___default.a.JCReverb(
   { roomSize: 0.8, wet: 0 }
 );
-/* harmony export (immutable) */ __webpack_exports__["k"] = splash;
+/* harmony export (immutable) */ __webpack_exports__["j"] = splash;
 
 const delay = new __WEBPACK_IMPORTED_MODULE_0_tone___default.a.PingPongDelay(
   { delayTime: "4n", feedback: 0.2, wet: 0 }
 );
-/* harmony export (immutable) */ __webpack_exports__["f"] = delay;
+/* harmony export (immutable) */ __webpack_exports__["e"] = delay;
 
 const reverb = new __WEBPACK_IMPORTED_MODULE_0_tone___default.a.Freeverb(
   { roomSize: 0.88, dampening: 2000, wet: 0 }
 );
-/* harmony export (immutable) */ __webpack_exports__["j"] = reverb;
+/* harmony export (immutable) */ __webpack_exports__["i"] = reverb;
 
 const vibrato = new __WEBPACK_IMPORTED_MODULE_0_tone___default.a.Vibrato(
   { frequency: 8, depth: 0.2, wet: 0 }
 );
-/* harmony export (immutable) */ __webpack_exports__["m"] = vibrato;
+/* harmony export (immutable) */ __webpack_exports__["l"] = vibrato;
 
 const compressor = new __WEBPACK_IMPORTED_MODULE_0_tone___default.a.Compressor(-24, 20);
-/* harmony export (immutable) */ __webpack_exports__["e"] = compressor;
+/* harmony export (immutable) */ __webpack_exports__["d"] = compressor;
 
 const limiter = new __WEBPACK_IMPORTED_MODULE_0_tone___default.a.Limiter(-15);
-/* harmony export (immutable) */ __webpack_exports__["i"] = limiter;
+/* harmony export (immutable) */ __webpack_exports__["h"] = limiter;
 
 
 // .wet value state for effects when turned on.
@@ -24403,28 +24539,18 @@ const FXBANK = {
   "reverb": [reverb, 0.6],
   "vibrato": [vibrato, 0.6],
 };
-/* harmony export (immutable) */ __webpack_exports__["b"] = FXBANK;
+/* harmony export (immutable) */ __webpack_exports__["a"] = FXBANK;
 
 
 // keyboard keys linked to effects.
 const FXCODES = {
-  '1'  : [tremolo, "down", "tremolo"],
-  '2'  : [tremolo, "up", "tremolo"],
-  'q'  : [tremolo, "toggle", "tremolo"],
-  '3'  : [autopan, "down", "autopan"],
-  '4'  : [autopan, "up", "autopan"],
-  'e'  : [autopan, "toggle", "autopan"],
-  '5'  : [splash, "down", "splash"],
-  '6'  : [splash, "up", "splash"],
-  't'  : [splash, "toggle", "splash"],
-  '7'  : [delay, "down", "delay"],
-  '8'  : [delay, "up", "delay"],
-  'u'  : [delay, "toggle", "delay"],
-  '9'  : [reverb, "down", "reverb"],
-  '0'  : [reverb, "up", "reverb"],
-  'o'  : [reverb, "toggle", "reverb"],
+  'q'  : [tremolo, "tremolo"],
+  'e'  : [autopan, "autopan"],
+  't'  : [splash, "splash"],
+  'u'  : [delay, "delay"],
+  'o'  : [reverb, "reverb"]
 };
-/* harmony export (immutable) */ __webpack_exports__["c"] = FXCODES;
+/* harmony export (immutable) */ __webpack_exports__["b"] = FXCODES;
 
 
 // effect states
@@ -24436,7 +24562,7 @@ const ACTIVEFX = {
   'reverb'  : false,
   'vibrato' : false
 };
-/* harmony export (immutable) */ __webpack_exports__["a"] = ACTIVEFX;
+/* unused harmony export ACTIVEFX */
 
 
 // show and hide the EFX container
@@ -24446,24 +24572,24 @@ const efxPaneToggle = $efxContainer => {
 
   $efxContainer.animate({ bottom: `${val}`}, 350);
 };
-/* harmony export (immutable) */ __webpack_exports__["h"] = efxPaneToggle;
+/* harmony export (immutable) */ __webpack_exports__["g"] = efxPaneToggle;
 
 
 // turn effects on and off
 const effectToggle = (effect, effectStr) => {
   if (!ACTIVEFX[effect]) {
     effect.wet.rampTo(FXBANK[effectStr][1], .1);
-    $(`.${effectStr}`)[0].value = FXBANK[effectStr][1];
+    // $(`.${effectStr}`)[0].value = FXBANK[effectStr][1];
     ACTIVEFX[effect] = true;
   }
   else {
     effect.wet.rampTo(0, .1);
-    $(`.${effectStr}`)[0].value = 0;
+    // $(`.${effectStr}`)[0].value = 0;
     ACTIVEFX[effect] = false;
   }
   $(`#${effectStr}`).toggleClass('active');
 };
-/* harmony export (immutable) */ __webpack_exports__["g"] = effectToggle;
+/* harmony export (immutable) */ __webpack_exports__["f"] = effectToggle;
 
 
 // turn vibrato on and off
@@ -24482,7 +24608,7 @@ const vibratoToggle = ($vibrato, $vibratoKey) => {
     $vibratoKey.toggleClass('keydown');
   }, 120);
 };
-/* harmony export (immutable) */ __webpack_exports__["n"] = vibratoToggle;
+/* harmony export (immutable) */ __webpack_exports__["m"] = vibratoToggle;
 
 
 
@@ -24491,38 +24617,8 @@ const vibratoToggle = ($vibrato, $vibratoKey) => {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_tone__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_tone___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_tone__);
-
-
-/////////////////////
-///// analysers /////
-/////////////////////
-
-const waveform = new __WEBPACK_IMPORTED_MODULE_0_tone___default.a.Analyser(
-  { size: 2048, type: 'waveform', smoothing: 1 }
-);
-/* harmony export (immutable) */ __webpack_exports__["a"] = waveform;
-
-
-// ##### meter analyser ##### //
-// const meter = new Tone.Meter(0.8);
-// instrument.connect(meter);
-
-// ####### mic ######## //
-// let mic = new Tone.UserMedia();
-// mic.connect(waveform);
-// .toMaster();
-// mic.open();
-
-
-/***/ }),
-/* 7 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__key_mouse__ = __webpack_require__(8);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__analysers__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__key_mouse__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__analysers__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__zenscillator__ = __webpack_require__(0);
 
 
@@ -24574,7 +24670,6 @@ const drawLoopStraight = lineWidth => {
   ctx.lineJoin = "round";
   ctx.lineWidth = lineWidth;
 
-  ctx.moveTo(0, (values[0] + 1) / 2 * canvasHeight);
   for (let i = 1, len = values.length; i < len; i += 1) {
     const val = (values[i] + 1) / 2;
     const x = canvasWidth * (i / (len - 1));  // width of canvas multiplied by current percent progress through the 'values' array.
@@ -24587,7 +24682,7 @@ const drawLoopStraight = lineWidth => {
 
 
 // canvas draw function, uses analyser and paints waveform along circular path
-const drawLoopCircle = (lineWidth, circleSpeed) => {
+const drawLoopCircle = (lineWidth, circleSpeed, radiusDenom) => {
   const $canvas = $('#canvas');
   const ctx = $canvas[0].getContext("2d");
   ctx.canvas.width = $canvas.width();
@@ -24604,7 +24699,7 @@ const drawLoopCircle = (lineWidth, circleSpeed) => {
 
   const centerX = canvasWidth / 2;
   const centerY = canvasHeight / 2;
-  const radius = canvasHeight / 4;
+  const radius = canvasHeight / radiusDenom;
 
   for (let i = 1, angle = 0, len = values.length; i < len; i += 1, angle += circleSpeed) {
     const val = (values[i] + 1);
@@ -24623,13 +24718,13 @@ const drawerOn = () => {
 
   if (!window.drawer) {
     window.drawer = window.setInterval(() => {
-      __WEBPACK_IMPORTED_MODULE_2__zenscillator__["Zen"].drawLoop(__WEBPACK_IMPORTED_MODULE_2__zenscillator__["Zen"].lineWidth, __WEBPACK_IMPORTED_MODULE_2__zenscillator__["Zen"].circleSpeed), 1
+      __WEBPACK_IMPORTED_MODULE_2__zenscillator__["Zen"].drawLoop(__WEBPACK_IMPORTED_MODULE_2__zenscillator__["Zen"].lineWidth, __WEBPACK_IMPORTED_MODULE_2__zenscillator__["Zen"].circleSpeed, __WEBPACK_IMPORTED_MODULE_2__zenscillator__["Zen"].radiusDenom), 1
     });
   }
   else {
     clearInterval(window.drawer);
     window.drawer = window.setInterval(() => {
-      __WEBPACK_IMPORTED_MODULE_2__zenscillator__["Zen"].drawLoop(__WEBPACK_IMPORTED_MODULE_2__zenscillator__["Zen"].lineWidth, __WEBPACK_IMPORTED_MODULE_2__zenscillator__["Zen"].circleSpeed), 1
+      __WEBPACK_IMPORTED_MODULE_2__zenscillator__["Zen"].drawLoop(__WEBPACK_IMPORTED_MODULE_2__zenscillator__["Zen"].lineWidth, __WEBPACK_IMPORTED_MODULE_2__zenscillator__["Zen"].circleSpeed, __WEBPACK_IMPORTED_MODULE_2__zenscillator__["Zen"].radiusDenom), 1
     });
   }
 };
@@ -24676,97 +24771,12 @@ const visualToggle = visualStr => {
 
 // show and hide the visualsContainer
 const visualsPaneToggle = $visualsContainer => {
-  const val = __WEBPACK_IMPORTED_MODULE_2__zenscillator__["Zen"].visualsPane ? '-100px' : '0px';
+  const val = __WEBPACK_IMPORTED_MODULE_2__zenscillator__["Zen"].visualsPane ? '-205px' : '0px';
   __WEBPACK_IMPORTED_MODULE_2__zenscillator__["Zen"].visualsPane = !__WEBPACK_IMPORTED_MODULE_2__zenscillator__["Zen"].visualsPane;
 
   $visualsContainer.animate({ bottom: `${val}`}, 350);
 };
 /* harmony export (immutable) */ __webpack_exports__["f"] = visualsPaneToggle;
-
-
-
-/***/ }),
-/* 8 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-// keyboard keys linked to piano notes and colors
-const KEYCODES = {
-  'z'  : ['C', 'red', '#ff3030'],
-  's'  : ['Db', 'redorange', '#ff6a30'],
-  'x'  : ['D', 'orange', '#ffaf30'],
-  'd'  : ['Eb', 'orangeyellow', '#ffd930'],
-  'c'  : ['E', 'yellow', '#fbff30'],
-  'v'  : ['F', 'green', '#4bff30'],
-  'g'  : ['Gb', 'teal', '#30ffb9'],
-  'b'  : ['G', 'lightblue', '#30fffb'],
-  'h'  : ['Ab', 'blue', '#30b9ff'],
-  'n'  : ['A', 'bluepurple', '#3048ff'],
-  'j'  : ['Bb', 'purple', '#c030ff'],
-  'm'  : ['B', 'magenta', '#ff30af'],
-  ','  : ['eC', 'red', '#ff3030'],
-  'l'  : ['eDb', 'redorange', '#ff6a30'],
-  '.'  : ['eD', 'orange', '#ffaf30'],
-  ';'  : ['eEb', 'orangeyellow', '#ffd930'],
-  '/'  : ['eE', 'yellow', '#fbff30']
-};
-/* harmony export (immutable) */ __webpack_exports__["a"] = KEYCODES;
-
-
-// keyboard key states - are the piano notes held down or not?
-const KEYSTATES = {
-  'z'  : false,
-  's'  : false,
-  'x'  : false,
-  'd'  : false,
-  'c'  : false,
-  'v'  : false,
-  'g'  : false,
-  'b'  : false,
-  'h'  : false,
-  'n'  : false,
-  'j'  : false,
-  'm'  : false,
-  ','  : false,
-  'l'  : false,
-  '.'  : false,
-  ';'  : false,
-  '/'  : false
-};
-/* harmony export (immutable) */ __webpack_exports__["b"] = KEYSTATES;
-
-
-// modifier key states
-const MODKEYS = {
-  'Meta': false, // MAC: command, WIN: windows
-  'Alt': false,
-  'Shift': false,
-  ' ': false
-};
-/* harmony export (immutable) */ __webpack_exports__["c"] = MODKEYS;
-
-
-// same as KEYCODES, except found by e.target.id when clicking on piano keys.
-const MOUSECODES = {
-  'C': ['red', '#ff3030'],
-  'Db': ['redorange', '#ff6a30'],
-  'D': ['orange', '#ffaf30'],
-  'Eb': ['orangeyellow', '#ffd930'],
-  'E': ['yellow', '#fbff30'],
-  'F': ['green', '#4bff30'],
-  'Gb': ['teal', '#30ffb9'],
-  'G': ['lightblue', '#30fffb'],
-  'Ab': ['blue', '#30b9ff'],
-  'A': ['bluepurple', '#3048ff'],
-  'Bb': ['purple', '#c030ff'],
-  'B': ['magenta', '#ff30af'],
-  'eC': ['red', '#ff3030'],
-  'eDb': ['redorange', '#ff6a30'],
-  'eD': ['orange', '#ffaf30'],
-  'eEb': ['orangeyellow', '#ffd930'],
-  'eE': ['yellow', '#fbff30']
-};
-/* harmony export (immutable) */ __webpack_exports__["d"] = MOUSECODES;
 
 
 

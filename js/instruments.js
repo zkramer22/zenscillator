@@ -6,7 +6,9 @@ import { Zen } from './zenscillator';
 //////////////////////
 
 export const INSTRUMENTS = {
-  "synth"     : new Tone.PolySynth(16, Tone.Synth).set({ oscillator: { type: 'sine' }, volume: -5 }),
+  "sine"      : new Tone.PolySynth(16, Tone.Synth).set({ oscillator: { type: 'sine' } }),
+  "triangle"  : new Tone.PolySynth(16, Tone.Synth).set({ oscillator: { type: 'triangle' } }),
+  "square"    : new Tone.PolySynth(16, Tone.Synth).set({ oscillator: { type: 'square' } }),
   "membrane"  : new Tone.PolySynth(2, Tone.MembraneSynth),
   "fm"        : new Tone.PolySynth(6, Tone.FMSynth)
 };

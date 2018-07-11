@@ -44,7 +44,6 @@ export const drawLoopStraight = lineWidth => {
   ctx.lineJoin = "round";
   ctx.lineWidth = lineWidth;
 
-  ctx.moveTo(0, (values[0] + 1) / 2 * canvasHeight);
   for (let i = 1, len = values.length; i < len; i += 1) {
     const val = (values[i] + 1) / 2;
     const x = canvasWidth * (i / (len - 1));  // width of canvas multiplied by current percent progress through the 'values' array.
@@ -55,7 +54,7 @@ export const drawLoopStraight = lineWidth => {
 }
 
 // canvas draw function, uses analyser and paints waveform along circular path
-export const drawLoopCircle = (lineWidth, circleSpeed) => {
+export const drawLoopCircle = (lineWidth, circleSpeed, radiusDenom) => {
   const $canvas = $('#canvas');
   const ctx = $canvas[0].getContext("2d");
   ctx.canvas.width = $canvas.width();
@@ -72,7 +71,7 @@ export const drawLoopCircle = (lineWidth, circleSpeed) => {
 
   const centerX = canvasWidth / 2;
   const centerY = canvasHeight / 2;
-  const radius = canvasHeight / 4;
+  const radius = canvasHeight / radiusDenom;
 
   for (let i = 1, angle = 0, len = values.length; i < len; i += 1, angle += circleSpeed) {
     const val = (values[i] + 1);
@@ -89,13 +88,13 @@ export const drawerOn = () => {
 
   if (!window.drawer) {
     window.drawer = window.setInterval(() => {
-      Zen.drawLoop(Zen.lineWidth, Zen.circleSpeed), 1
+      Zen.drawLoop(Zen.lineWidth, Zen.circleSpeed, Zen.radiusDenom), 1
     });
   }
   else {
     clearInterval(window.drawer);
     window.drawer = window.setInterval(() => {
-      Zen.drawLoop(Zen.lineWidth, Zen.circleSpeed), 1
+      Zen.drawLoop(Zen.lineWidth, Zen.circleSpeed, Zen.radiusDenom), 1
     });
   }
 };
@@ -134,7 +133,7 @@ export const visualToggle = visualStr => {
 
 // show and hide the visualsContainer
 export const visualsPaneToggle = $visualsContainer => {
-  const val = Zen.visualsPane ? '-100px' : '0px';
+  const val = Zen.visualsPane ? '-205px' : '0px';
   Zen.visualsPane = !Zen.visualsPane;
 
   $visualsContainer.animate({ bottom: `${val}`}, 350);
