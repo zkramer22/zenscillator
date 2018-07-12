@@ -371,7 +371,7 @@ $(document).ready(() => {
       });
 
       // extra keys: octave switch, vibrato toggle
-      document.addEventListener('keypress', e => {
+      $body.keypress(e => {
         const keyPress = e.key;
         switch (keyPress) {
           case '=':

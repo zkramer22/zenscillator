@@ -148,7 +148,7 @@ $(document).ready(() => {
 
       $body.contextmenu(e => e.preventDefault());
 
-      // $('#instructions-container').fadeIn(1000);
+      $('#instructions-container').fadeIn(1000);
 
       // click to play notes. Mouseup and mousemove events inside.
       $keys.mousedown(e => {
@@ -442,7 +442,7 @@ $(document).ready(() => {
       });
 
       // extra keys: octave switch, vibrato toggle
-      document.addEventListener('keypress', e => {
+      $body.keypress(e => {
         const keyPress = e.key;
         switch (keyPress) {
           case '=':
