@@ -27,7 +27,7 @@ export const createGradient = (ctx, canvasWidth, canvasHeight) => {
 };
 
 // canvas draw function, uses analyser and paints waveform from left to right
-export const drawLoopStraight = lineWidth => {
+export const drawLoopLinear = lineWidth => {
   const $canvas = $('#canvas');
   const ctx = $canvas[0].getContext("2d");
   ctx.canvas.width = $canvas.width();
@@ -120,7 +120,7 @@ export const drawerOff = modifier => {
 
 // object for storing draw functions, to be used when changing the drawLoop value
 export const DRAWERS = {
-  'straight': drawLoopStraight,
+  'straight': drawLoopLinear,
   'circle': drawLoopCircle
 };
 
